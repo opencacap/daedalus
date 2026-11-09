@@ -11,6 +11,16 @@
       "name": "daedalus-core",
       "source": "./plugins/daedalus-core",
       "description": "Shared engineering rules loaded at session start, with Matt Pocock's skills as the engineering workflow."
+    },
+    {
+      "name": "daedalus-java",
+      "source": "./plugins/daedalus-java",
+      "description": "Framework-agnostic Java coding standards."
+    },
+    {
+      "name": "daedalus-springboot",
+      "source": "./plugins/daedalus-springboot",
+      "description": "Spring Boot conventions, patterns, security, verification, JPA and PostgreSQL skills, plus a Java build-error agent."
     }
   ]
 }

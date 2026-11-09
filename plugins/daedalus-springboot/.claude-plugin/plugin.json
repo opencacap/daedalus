@@ -1,0 +1,12 @@
+{
+  "name": "daedalus-springboot",
+  "version": "0.1.0",
+  "description": "Spring Boot conventions, patterns, security, verification, JPA and PostgreSQL skills, plus a Java build-error agent.",
+  "author": {
+    "name": "opencacap"
+  },
+  "homepage": "https://github.com/opencacap/daedalus",
+  "repository": "https://github.com/opencacap/daedalus",
+  "license": "MIT",
+  "dependencies": ["daedalus-java"]
+}

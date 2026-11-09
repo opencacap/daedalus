@@ -7,6 +7,10 @@ A Claude Code plugin marketplace for shared engineering rules and workflow plugi
 | Plugin | What it does |
 |---|---|
 | `daedalus-core` | Loads the shared engineering rules in [`plugins/daedalus-core/rules/`](plugins/daedalus-core/rules/) at every session start. Depends on [`mattpocock-skills`](https://github.com/mattpocock/skills) (engineering workflow), [`ponytail`](https://github.com/DietrichGebert/ponytail) (simplicity), and [`caveman`](https://github.com/JuliusBrussee/caveman) (terse replies). |
+| `daedalus-java` | Skill `java-coding-standards`: framework-agnostic Java standards. Depends on `daedalus-core`. |
+| `daedalus-springboot` | Skills `spring-coding-standards`, `springboot-patterns`, `springboot-security`, `springboot-verification`, `jpa-patterns`, `postgres-patterns`, and the `java-build-resolver` agent. Depends on `daedalus-java`. |
+
+Plugins extend each other through dependencies: enabling `daedalus-springboot` also installs `daedalus-java` and `daedalus-core`. A Spring Boot project only needs `"daedalus-springboot@daedalus": true` in `enabledPlugins`.
 
 Every plugin is named `daedalus-<name>`, so its skills and agents stay recognizable next to other plugins: `/daedalus-<name>:<skill>`.
 

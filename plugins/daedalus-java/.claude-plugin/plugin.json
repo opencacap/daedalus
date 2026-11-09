@@ -1,0 +1,12 @@
+{
+  "name": "daedalus-java",
+  "version": "0.1.0",
+  "description": "Framework-agnostic Java coding standards.",
+  "author": {
+    "name": "opencacap"
+  },
+  "homepage": "https://github.com/opencacap/daedalus",
+  "repository": "https://github.com/opencacap/daedalus",
+  "license": "MIT",
+  "dependencies": ["daedalus-core"]
+}
