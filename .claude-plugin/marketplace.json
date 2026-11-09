@@ -1,0 +1,16 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "daedalus",
+  "description": "Shared engineering rules and workflow plugins for Claude Code.",
+  "owner": {
+    "name": "opencacap"
+  },
+  "allowCrossMarketplaceDependenciesOn": ["claude-plugins-official", "caveman", "ponytail"],
+  "plugins": [
+    {
+      "name": "daedalus-core",
+      "source": "./plugins/daedalus-core",
+      "description": "Shared engineering rules loaded at session start, with Matt Pocock's skills as the engineering workflow."
+    }
+  ]
+}
