@@ -1,7 +1,7 @@
 {
   "name": "daedalus-core",
-  "version": "0.1.0",
-  "description": "Shared engineering rules loaded at session start, with Matt Pocock's skills as the engineering workflow.",
+  "version": "0.2.0",
+  "description": "Shared engineering rules loaded at session start and a security-review skill, with Matt Pocock's skills as the engineering workflow.",
   "author": {
     "name": "opencacap"
   },

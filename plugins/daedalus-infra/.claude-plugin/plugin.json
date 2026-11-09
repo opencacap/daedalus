@@ -1,0 +1,16 @@
+{
+  "name": "daedalus-infra",
+  "version": "0.1.0",
+  "description": "Infrastructure: Docker patterns, plus the official AWS (aws-core) and Terraform plugins.",
+  "author": {
+    "name": "opencacap"
+  },
+  "homepage": "https://github.com/opencacap/daedalus",
+  "repository": "https://github.com/opencacap/daedalus",
+  "license": "MIT",
+  "dependencies": [
+    "daedalus-core",
+    "aws-core@claude-plugins-official",
+    "terraform@claude-plugins-official"
+  ]
+}

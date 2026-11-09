@@ -10,7 +10,7 @@
     {
       "name": "daedalus-core",
       "source": "./plugins/daedalus-core",
-      "description": "Shared engineering rules loaded at session start, with Matt Pocock's skills as the engineering workflow."
+      "description": "Shared engineering rules loaded at session start and a security-review skill, with Matt Pocock's skills as the engineering workflow."
     },
     {
       "name": "daedalus-java",
@@ -20,7 +20,12 @@
     {
       "name": "daedalus-springboot",
       "source": "./plugins/daedalus-springboot",
-      "description": "Spring Boot conventions, patterns, security, verification, JPA and PostgreSQL skills, plus a Java build-error agent."
+      "description": "Spring Boot conventions, patterns, security, verification, hexagonal architecture, JPA and PostgreSQL skills, plus a Java build-error agent."
+    },
+    {
+      "name": "daedalus-infra",
+      "source": "./plugins/daedalus-infra",
+      "description": "Infrastructure: Docker patterns, plus the official AWS (aws-core) and Terraform plugins."
     }
   ]
 }

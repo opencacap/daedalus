@@ -1,7 +1,7 @@
 {
   "name": "daedalus-springboot",
-  "version": "0.1.0",
-  "description": "Spring Boot conventions, patterns, security, verification, JPA and PostgreSQL skills, plus a Java build-error agent.",
+  "version": "0.2.0",
+  "description": "Spring Boot conventions, patterns, security, verification, hexagonal architecture, JPA and PostgreSQL skills, plus a Java build-error agent.",
   "author": {
     "name": "opencacap"
   },
