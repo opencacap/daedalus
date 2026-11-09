@@ -6,10 +6,12 @@ A Claude Code plugin marketplace for shared engineering rules and workflow plugi
 
 | Plugin | What it does |
 |---|---|
-| `daedalus-core` | Loads the shared engineering rules in [`plugins/daedalus-core/rules/`](plugins/daedalus-core/rules/) at every session start, and provides the `security-review` skill. Depends on [`mattpocock-skills`](https://github.com/mattpocock/skills) (engineering workflow), [`ponytail`](https://github.com/DietrichGebert/ponytail) (simplicity), and [`caveman`](https://github.com/JuliusBrussee/caveman) (terse replies). |
+| `daedalus-core` | Loads the shared engineering rules in [`plugins/daedalus-core/rules/`](plugins/daedalus-core/rules/) at every session start, and provides the `security-review` skill. Depends on [`mattpocock-skills`](https://github.com/mattpocock/skills) (engineering workflow) and the pinned `ponytail` and `caveman` entries below. |
 | `daedalus-java` | Skill `java-coding-standards`: framework-agnostic Java standards. Depends on `daedalus-core`. |
 | `daedalus-springboot` | Skills `spring-coding-standards`, `springboot-patterns`, `springboot-security`, `springboot-verification`, `hexagonal-architecture`, `jpa-patterns`, `postgres-patterns`, and the `java-build-resolver` agent. Depends on `daedalus-java`. |
 | `daedalus-infra` | Skill `docker-patterns`. Depends on `daedalus-core` and the official [`aws-core`](https://github.com/aws/agent-toolkit-for-aws) and `terraform` (HashiCorp) plugins from `claude-plugins-official`. Their MCP servers need `uvx` plus AWS credentials (`aws-mcp`) and a running Docker daemon (`terraform`); without them the server fails to connect but the skills still work. |
+| `ponytail` | Third-party [DietrichGebert/ponytail](https://github.com/DietrichGebert/ponytail), pinned to a reviewed commit (5.3.3): simplest working solution. |
+| `caveman` | Third-party [JuliusBrussee/caveman](https://github.com/JuliusBrussee/caveman), pinned to a reviewed commit: terse replies. |
 
 Plugins extend each other through dependencies: enabling `daedalus-springboot` also installs `daedalus-java` and `daedalus-core`. A Spring Boot project only needs `"daedalus-springboot@daedalus": true` in `enabledPlugins`.
 
@@ -17,7 +19,7 @@ Every plugin is named `daedalus-<name>`, so its skills and agents stay recogniza
 
 ## Install
 
-Claude Code installs a dependency only from a marketplace you have already added. If a dependency's marketplace is missing, `daedalus-core` installs but fails to load. Add all four marketplaces.
+Claude Code installs a dependency only from a marketplace you have already added. If a dependency's marketplace is missing, `daedalus-core` installs but fails to load. Add both marketplaces.
 
 ### For a project team
 
@@ -27,9 +29,7 @@ Commit this to the project's `.claude/settings.json`. Teammates are offered the 
 {
   "extraKnownMarketplaces": {
     "daedalus": { "source": { "source": "github", "repo": "opencacap/daedalus" } },
-    "claude-plugins-official": { "source": { "source": "github", "repo": "anthropics/claude-plugins-official" } },
-    "caveman": { "source": { "source": "github", "repo": "JuliusBrussee/caveman" } },
-    "ponytail": { "source": { "source": "github", "repo": "DietrichGebert/ponytail" } }
+    "claude-plugins-official": { "source": { "source": "github", "repo": "anthropics/claude-plugins-official" } }
   },
   "enabledPlugins": {
     "daedalus-core@daedalus": true
@@ -41,8 +41,6 @@ Commit this to the project's `.claude/settings.json`. Teammates are offered the 
 
 ```text
 /plugin marketplace add anthropics/claude-plugins-official
-/plugin marketplace add JuliusBrussee/caveman
-/plugin marketplace add DietrichGebert/ponytail
 /plugin marketplace add opencacap/daedalus
 /plugin install daedalus-core@daedalus
 ```
@@ -50,6 +48,18 @@ Commit this to the project's `.claude/settings.json`. Teammates are offered the 
 ### Turning caveman off
 
 A dependency cannot be disabled while `daedalus-core` is enabled. To keep normal replies, set caveman's default mode instead: `{"defaultMode": "off"}` in `~/.config/caveman/config.json`, or `CAVEMAN_DEFAULT_MODE=off`.
+
+If you installed `caveman@caveman` or `ponytail@ponytail` from their own marketplaces before, uninstall them; otherwise their hooks run twice.
+
+## Third-party plugins
+
+`caveman` and `ponytail` run hook scripts on every session, so teammates must never receive an unreviewed upstream change. This marketplace lists them with a `url` source pinned to a commit `sha`, and `daedalus-core` depends on these pinned entries instead of the upstream marketplaces.
+
+To update one:
+
+1. Read the upstream diff from the pinned `sha`, focusing on `hooks/`, the hook manifests, and any network, process, or file-write calls.
+2. Set the new `sha` in `.claude-plugin/marketplace.json`.
+3. Installs pick it up with `claude plugin marketplace update daedalus` followed by `claude plugin update <plugin>@daedalus`.
 
 ## Names
 

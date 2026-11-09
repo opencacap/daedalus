@@ -5,7 +5,7 @@
   "owner": {
     "name": "opencacap"
   },
-  "allowCrossMarketplaceDependenciesOn": ["claude-plugins-official", "caveman", "ponytail"],
+  "allowCrossMarketplaceDependenciesOn": ["claude-plugins-official"],
   "plugins": [
     {
       "name": "daedalus-core",
@@ -26,6 +26,26 @@
       "name": "daedalus-infra",
       "source": "./plugins/daedalus-infra",
       "description": "Infrastructure: Docker patterns, plus the official AWS (aws-core) and Terraform plugins."
+    },
+    {
+      "name": "caveman",
+      "source": {
+        "source": "url",
+        "url": "https://github.com/JuliusBrussee/caveman.git",
+        "sha": "0d95a81d35a9f2d123a5e9430d1cfc43d55f1bb0"
+      },
+      "description": "Third-party (JuliusBrussee/caveman), pinned to a reviewed commit: terse replies.",
+      "homepage": "https://github.com/JuliusBrussee/caveman"
+    },
+    {
+      "name": "ponytail",
+      "source": {
+        "source": "url",
+        "url": "https://github.com/DietrichGebert/ponytail.git",
+        "sha": "96608e078b2d5ea607c5c3b8b5a54d1c1fba6846"
+      },
+      "description": "Third-party (DietrichGebert/ponytail 5.3.3), pinned to a reviewed commit: simplest working solution.",
+      "homepage": "https://github.com/DietrichGebert/ponytail"
     }
   ]
 }

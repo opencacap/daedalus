@@ -1,6 +1,6 @@
 {
   "name": "daedalus-core",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Shared engineering rules loaded at session start and a security-review skill, with Matt Pocock's skills as the engineering workflow.",
   "author": {
     "name": "opencacap"
@@ -10,7 +10,7 @@
   "license": "MIT",
   "dependencies": [
     "mattpocock-skills@claude-plugins-official",
-    "caveman@caveman",
-    "ponytail@ponytail"
+    "caveman",
+    "ponytail"
   ]
 }
