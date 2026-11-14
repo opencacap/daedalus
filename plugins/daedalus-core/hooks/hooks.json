@@ -6,7 +6,8 @@
           {
             "type": "command",
             "command": "cat \"${CLAUDE_PLUGIN_ROOT}\"/rules/*.md",
-            "timeout": 5
+            "timeout": 5,
+            "statusMessage": "Loading daedalus rules..."
           }
         ]
       }

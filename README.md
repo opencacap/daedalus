@@ -1,6 +1,6 @@
 # daedalus
 
-A Claude Code plugin marketplace for shared engineering rules and workflow plugins.
+A Claude Code and Codex plugin marketplace for shared engineering rules and workflow plugins.
 
 ## Plugins
 
@@ -11,7 +11,7 @@ A Claude Code plugin marketplace for shared engineering rules and workflow plugi
 | `daedalus-springboot` | Skills `spring-coding-standards`, `springboot-patterns`, `springboot-security`, `springboot-verification`, `hexagonal-architecture`, `jpa-patterns`, `postgres-patterns`, and the `java-build-resolver` agent. Depends on `daedalus-java`. |
 | `daedalus-infra` | Skill `docker-patterns`. Depends on `daedalus-core` and the official [`aws-core`](https://github.com/aws/agent-toolkit-for-aws) and `terraform` (HashiCorp) plugins from `claude-plugins-official`. Their MCP servers need `uvx` plus AWS credentials (`aws-mcp`) and a running Docker daemon (`terraform`); without them the server fails to connect but the skills still work. |
 | `ponytail` | Third-party [DietrichGebert/ponytail](https://github.com/DietrichGebert/ponytail), pinned to a reviewed commit (5.3.3): simplest working solution. |
-| `caveman` | Third-party [JuliusBrussee/caveman](https://github.com/JuliusBrussee/caveman), pinned to a reviewed commit: terse replies. |
+| `caveman` | Third-party [JuliusBrussee/caveman](https://github.com/JuliusBrussee/caveman), pinned to a reviewed commit (4.1.0): terse replies. |
 
 Plugins extend each other through dependencies: enabling `daedalus-springboot` also installs `daedalus-java` and `daedalus-core`. A Spring Boot project only needs `"daedalus-springboot@daedalus": true` in `enabledPlugins`.
 
@@ -45,6 +45,27 @@ Commit this to the project's `.claude/settings.json`. Teammates are offered the 
 /plugin install daedalus-core@daedalus
 ```
 
+### Codex
+
+Codex reads this marketplace's `.claude-plugin/` manifests, skills, and hooks as they are, but it ignores `dependencies`. Install every plugin yourself:
+
+```text
+codex plugin marketplace add anthropics/claude-plugins-official
+codex plugin marketplace add opencacap/daedalus
+codex plugin add daedalus-core@daedalus
+codex plugin add caveman@daedalus
+codex plugin add ponytail@daedalus
+codex plugin add mattpocock-skills@claude-plugins-official
+```
+
+A stack plugin needs its whole chain: `daedalus-springboot` also needs `daedalus-java@daedalus`, and `daedalus-infra` also needs `aws-core@claude-plugins-official` and `terraform@claude-plugins-official`.
+
+Then run `/hooks` in Codex and trust the `daedalus-core`, `caveman`, and `ponytail` hooks. Codex skips untrusted plugin hooks, so the rules do not load until you do, and it asks again after every plugin update.
+
+Codex plugins cannot ship agents, so `java-build-resolver` is Claude Code only.
+
+If you installed caveman with its own installer (an entry in `~/.codex/hooks.json`) or `ponytail@ponytail`, remove them; otherwise their hooks run twice.
+
 ### Turning caveman off
 
 A dependency cannot be disabled while `daedalus-core` is enabled. To keep normal replies, set caveman's default mode instead: `{"defaultMode": "off"}` in `~/.config/caveman/config.json`, or `CAVEMAN_DEFAULT_MODE=off`.
@@ -59,7 +80,7 @@ To update one:
 
 1. Read the upstream diff from the pinned `sha`, focusing on `hooks/`, the hook manifests, and any network, process, or file-write calls.
 2. Set the new `sha` in `.claude-plugin/marketplace.json`.
-3. Installs pick it up with `claude plugin marketplace update daedalus` followed by `claude plugin update <plugin>@daedalus`.
+3. Installs pick it up with `claude plugin marketplace update daedalus` followed by `claude plugin update <plugin>@daedalus`. Codex upgrades Git marketplaces when it starts (or run `codex plugin marketplace upgrade daedalus`), then asks to trust the changed hooks in `/hooks`.
 
 ## Names
 
@@ -76,6 +97,7 @@ To update one:
 - A project's own `CLAUDE.md`, `AGENTS.md`, and documented standards override these rules.
 - Keep rules technology-agnostic. Stack-specific rules belong in a separate `daedalus-<stack>` plugin, so each project enables only what it uses.
 - Every line is loaded into every session, so keep the files short.
+- Codex truncates hook output above about 2,500 tokens, so keep all `rules/*.md` files together under that.
 - The hook uses `cat`, so it requires a POSIX shell (macOS, Linux, or WSL).
 
 ## Adding a plugin

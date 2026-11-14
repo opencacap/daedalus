@@ -14,7 +14,7 @@ Parts of this repository are adapted from the projects below. Each is distribute
 
 `daedalus-core` depends on [mattpocock-skills](https://github.com/mattpocock/skills) (MIT, Copyright (c) 2026 Matt Pocock), which is installed from its own marketplace and is not redistributed here.
 
-The marketplace also lists [caveman](https://github.com/JuliusBrussee/caveman) (MIT, Copyright (c) 2026 Julius Brussee) and [ponytail](https://github.com/DietrichGebert/ponytail) (MIT, Copyright (c) 2026 DietrichGebert) by pinned commit. Both are fetched from their upstream repositories at install time and are not redistributed here.
+The marketplace also lists [caveman](https://github.com/JuliusBrussee/caveman) (Apache-2.0 since 3.0.0, Copyright 2026 Julius Brussee) and [ponytail](https://github.com/DietrichGebert/ponytail) (MIT, Copyright (c) 2026 DietrichGebert) by pinned commit. Both are fetched from their upstream repositories at install time and are not redistributed here.
 
 ## MIT License
 

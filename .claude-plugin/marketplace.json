@@ -1,7 +1,7 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "daedalus",
-  "description": "Shared engineering rules and workflow plugins for Claude Code.",
+  "description": "Shared engineering rules and workflow plugins for Claude Code and Codex.",
   "owner": {
     "name": "opencacap"
   },
@@ -32,9 +32,9 @@
       "source": {
         "source": "url",
         "url": "https://github.com/JuliusBrussee/caveman.git",
-        "sha": "0d95a81d35a9f2d123a5e9430d1cfc43d55f1bb0"
+        "sha": "1e91f1306d602d4ca23618701b1185575ae1869b"
       },
-      "description": "Third-party (JuliusBrussee/caveman), pinned to a reviewed commit: terse replies.",
+      "description": "Third-party (JuliusBrussee/caveman 4.1.0), pinned to a reviewed commit: terse replies.",
       "homepage": "https://github.com/JuliusBrussee/caveman"
     },
     {

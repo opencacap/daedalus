@@ -64,7 +64,8 @@ Apply these principles proportionally to the change and its risk.
 - Use Matt Pocock's skills for requirements discovery, domain modeling, specification, ticketing, implementation, TDD, code review, and retrospectives when appropriate.
 - `grill-with-docs`, `to-spec`, `to-tickets`, `implement`, `implement-spec`, `wayfinder`, and `retro` are user-invoked only (`disable-model-invocation: true`). When one fits, tell the user which command to run, for example `/mattpocock-skills:to-spec`.
 - Use other installed skills as on-demand references for language, framework, security, API, persistence, and verification work.
-- Do not substitute another plugin's overlapping planning, TDD, or code-review workflow (for example ECC or compound-engineering) for the Matt workflow without a specific reason.
+- Do not substitute another plugin's overlapping planning, TDD, or code-review workflow (for example ECC, compound-engineering, or caveman's `lean-build`, `safe-refactor`, `surgical-patch`, `migration`, `investigate-first`, and `verify-and-stop`) for the Matt workflow without a specific reason.
+- Use caveman's Caveman Cloud skills (`caveman-setup`, `caveman-discover`, `caveman-manage`, `caveman-optimize`, `caveman-evidence-review`) only when the user explicitly asks; `caveman-setup` routes the project's LLM traffic through a third-party gateway.
 - Do not run every workflow step for every task. Choose the smallest useful path:
   - Small, clear change: implement, verify, and review proportionally.
   - Ambiguous feature or design: `grill-with-docs` -> `to-spec` -> `to-tickets` (if needed) -> `implement` or `implement-spec`.
