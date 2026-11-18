@@ -20,12 +20,47 @@
     {
       "name": "daedalus-springboot",
       "source": "./plugins/daedalus-springboot",
-      "description": "Spring Boot conventions, patterns, security, verification, hexagonal architecture, JPA and PostgreSQL skills, plus a Java build-error agent."
+      "description": "Spring Boot conventions, patterns, security, verification, hexagonal architecture and JPA skills, plus a Java build-error agent."
     },
     {
       "name": "daedalus-infra",
       "source": "./plugins/daedalus-infra",
       "description": "Infrastructure: Docker patterns, plus the official AWS (aws-core) and Terraform plugins."
+    },
+    {
+      "name": "daedalus-postgres",
+      "source": "./plugins/daedalus-postgres",
+      "description": "PostgreSQL query, schema, indexing, and security patterns."
+    },
+    {
+      "name": "daedalus-python",
+      "source": "./plugins/daedalus-python",
+      "description": "Python patterns and pytest testing skills."
+    },
+    {
+      "name": "daedalus-fastapi",
+      "source": "./plugins/daedalus-fastapi",
+      "description": "FastAPI patterns: Pydantic v2 schemas, dependency injection, async handlers, auth, and testing."
+    },
+    {
+      "name": "daedalus-typescript",
+      "source": "./plugins/daedalus-typescript",
+      "description": "TypeScript patterns for strict, type-safe code."
+    },
+    {
+      "name": "daedalus-frontend",
+      "source": "./plugins/daedalus-frontend",
+      "description": "Framework-agnostic frontend skills: accessibility, interface polish, Vite, and Playwright E2E testing."
+    },
+    {
+      "name": "daedalus-react",
+      "source": "./plugins/daedalus-react",
+      "description": "React patterns, performance, testing, frontend patterns and accessibility skills, plus a React build-error agent."
+    },
+    {
+      "name": "daedalus-nextjs",
+      "source": "./plugins/daedalus-nextjs",
+      "description": "Next.js 16+ and Turbopack guidance."
     },
     {
       "name": "caveman",

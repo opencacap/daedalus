@@ -1,0 +1,12 @@
+{
+  "name": "daedalus-react",
+  "version": "0.1.0",
+  "description": "React patterns, performance, testing, frontend patterns and accessibility skills, plus a React build-error agent.",
+  "author": {
+    "name": "opencacap"
+  },
+  "homepage": "https://github.com/opencacap/daedalus",
+  "repository": "https://github.com/opencacap/daedalus",
+  "license": "MIT",
+  "dependencies": ["daedalus-frontend"]
+}

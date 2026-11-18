@@ -1,0 +1,12 @@
+{
+  "name": "daedalus-frontend",
+  "version": "0.1.0",
+  "description": "Framework-agnostic frontend skills: accessibility, interface polish, Vite, and Playwright E2E testing.",
+  "author": {
+    "name": "opencacap"
+  },
+  "homepage": "https://github.com/opencacap/daedalus",
+  "repository": "https://github.com/opencacap/daedalus",
+  "license": "MIT",
+  "dependencies": ["daedalus-typescript"]
+}

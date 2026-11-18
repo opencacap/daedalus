@@ -8,12 +8,19 @@ A Claude Code and Codex plugin marketplace for shared engineering rules and work
 |---|---|
 | `daedalus-core` | Loads the shared engineering rules in [`plugins/daedalus-core/rules/`](plugins/daedalus-core/rules/) at every session start, and provides the `security-review` skill. Depends on [`mattpocock-skills`](https://github.com/mattpocock/skills) (engineering workflow) and the pinned `ponytail` and `caveman` entries below. |
 | `daedalus-java` | Skill `java-coding-standards`: framework-agnostic Java standards. Depends on `daedalus-core`. |
-| `daedalus-springboot` | Skills `spring-coding-standards`, `springboot-patterns`, `springboot-security`, `springboot-verification`, `hexagonal-architecture`, `jpa-patterns`, `postgres-patterns`, and the `java-build-resolver` agent. Depends on `daedalus-java`. |
+| `daedalus-springboot` | Skills `spring-coding-standards`, `springboot-patterns`, `springboot-security`, `springboot-verification`, `hexagonal-architecture`, `jpa-patterns`, and the `java-build-resolver` agent. Depends on `daedalus-java`. |
 | `daedalus-infra` | Skill `docker-patterns`. Depends on `daedalus-core` and the official [`aws-core`](https://github.com/aws/agent-toolkit-for-aws) and `terraform` (HashiCorp) plugins from `claude-plugins-official`. Their MCP servers need `uvx` plus AWS credentials (`aws-mcp`) and a running Docker daemon (`terraform`); without them the server fails to connect but the skills still work. |
+| `daedalus-postgres` | Skill `postgres-patterns`. Depends on `daedalus-core`. Opt-in: no stack plugin depends on it, so enable it in projects that use PostgreSQL. |
+| `daedalus-python` | Skills `python-patterns` and `python-testing`. Depends on `daedalus-core`. |
+| `daedalus-fastapi` | Skill `fastapi-patterns`. Depends on `daedalus-python`. |
+| `daedalus-typescript` | Skill `typescript-patterns`. Depends on `daedalus-core`. |
+| `daedalus-frontend` | Skills `accessibility`, `make-interfaces-feel-better`, `vite-patterns`, and `e2e-testing` (Playwright). Depends on `daedalus-typescript`. |
+| `daedalus-react` | Skills `react-patterns`, `react-performance`, `react-testing`, `frontend-patterns`, `frontend-a11y`, and the `react-build-resolver` agent. Depends on `daedalus-frontend`. |
+| `daedalus-nextjs` | Skill `nextjs-turbopack`. Depends on `daedalus-react`. |
 | `ponytail` | Third-party [DietrichGebert/ponytail](https://github.com/DietrichGebert/ponytail), pinned to a reviewed commit (5.3.3): simplest working solution. |
 | `caveman` | Third-party [JuliusBrussee/caveman](https://github.com/JuliusBrussee/caveman), pinned to a reviewed commit (4.1.0): terse replies. |
 
-Plugins extend each other through dependencies: enabling `daedalus-springboot` also installs `daedalus-java` and `daedalus-core`. A Spring Boot project only needs `"daedalus-springboot@daedalus": true` in `enabledPlugins`.
+Plugins extend each other through dependencies: enabling `daedalus-springboot` also installs `daedalus-java` and `daedalus-core`. A Spring Boot project only needs `"daedalus-springboot@daedalus": true` in `enabledPlugins`. Likewise, `daedalus-nextjs` pulls `daedalus-react`, `daedalus-frontend`, `daedalus-typescript`, and `daedalus-core`, and `daedalus-fastapi` pulls `daedalus-python`.
 
 Every plugin is named `daedalus-<name>`, so its skills and agents stay recognizable next to other plugins: `/daedalus-<name>:<skill>`.
 
@@ -58,11 +65,11 @@ codex plugin add ponytail@daedalus
 codex plugin add mattpocock-skills@claude-plugins-official
 ```
 
-A stack plugin needs its whole chain: `daedalus-springboot` also needs `daedalus-java@daedalus`, and `daedalus-infra` also needs `aws-core@claude-plugins-official` and `terraform@claude-plugins-official`.
+A stack plugin needs its whole chain: `daedalus-springboot` also needs `daedalus-java@daedalus`; `daedalus-fastapi` needs `daedalus-python@daedalus`; `daedalus-nextjs` needs `daedalus-react@daedalus`, `daedalus-frontend@daedalus`, and `daedalus-typescript@daedalus`; and `daedalus-infra` also needs `aws-core@claude-plugins-official` and `terraform@claude-plugins-official`.
 
 Then run `/hooks` in Codex and trust the `daedalus-core`, `caveman`, and `ponytail` hooks. Codex skips untrusted plugin hooks, so the rules do not load until you do, and it asks again after every plugin update.
 
-Codex plugins cannot ship agents, so `java-build-resolver` is Claude Code only.
+Codex plugins cannot ship agents, so `java-build-resolver` and `react-build-resolver` are Claude Code only.
 
 If you installed caveman with its own installer (an entry in `~/.codex/hooks.json`) or `ponytail@ponytail`, remove them; otherwise their hooks run twice.
 
