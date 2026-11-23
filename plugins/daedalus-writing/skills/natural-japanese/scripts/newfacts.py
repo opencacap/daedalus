@@ -46,8 +46,12 @@ def norm(s: str) -> str:
     return unicodedata.normalize("NFKC", s).lower()
 
 
+def numeric_items(text: str) -> set[str]:
+    return {"".join(m.group().split()) for m in NUM.finditer(text)}
+
+
 def items(text: str) -> set[str]:
-    out = {m.group(0).replace(" ", "") for m in NUM.finditer(text)}
+    out = numeric_items(text)
     out |= {m.group(0) for m in ASCII.finditer(text)}
     tok = get_tokenizer()
     for line in text.split("\n"):
@@ -70,16 +74,25 @@ def new_items(original: str, revised: str) -> list[str]:
     a = items(orig)
     b = items(norm(FENCE.sub("", revised)))
     # 数字は単位や書き方(「2018/3」と「2018年3月」)が変わるだけのことが多いので、数字そのものが元にあれば除く
-    bare = {bare_number(x) for x in a if re.match(r"\d", x)}
-    cand = {x for x in b - a if not (re.match(r"\d", x) and bare_number(x) in bare)}
-    # 語の切り分け方の違い(「WebGL/WebGPU」、普通名詞と固有名詞の判定の揺れ)で新しく見えるものを除く
-    return sorted(x for x in cand if x not in orig)
+    bare = {bare_number(x) for x in a if NUM.fullmatch(x)}
+    found = []
+    for candidate in sorted(b - a):
+        if NUM.fullmatch(candidate):
+            if bare_number(candidate) not in bare:
+                found.append(candidate)
+        elif candidate not in orig:
+            # 語の切り分け方だけが変わった場合は除く
+            found.append(candidate)
+    return found
 
 
 def locate(revised: str, word: str) -> list[tuple[int, str]]:
     out = []
+    numeric = NUM.fullmatch(word)
     for no, line in enumerate(revised.split("\n"), 1):
-        if word in norm(line):
+        normalized = norm(line)
+        matches = word in numeric_items(normalized) if numeric else word in normalized
+        if matches:
             out.append((no, line.strip()))
     return out
 
