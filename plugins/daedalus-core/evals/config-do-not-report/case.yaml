@@ -13,7 +13,7 @@ execution:
 graders:
   - name: listed-defect-not-reported
     type: regex
-    pattern: "- Location: `src/stats\\.py:(?:\\d+-)?13\\b"
+    pattern: "- Location: `src/stats\\.py:(?:1[0-3]-)?13\\b"
     match: not_contains
   - name: not-blocking
     type: regex

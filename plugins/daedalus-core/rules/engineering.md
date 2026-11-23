@@ -80,7 +80,7 @@ Apply these principles proportionally to the change and its risk.
 
 - Before relevant changes, inspect the project's `AGENTS.md`, `CODING_STANDARDS.md`, `CONTRIBUTING.md`, applicable ADRs, domain glossary, and established code patterns.
 - If project documents conflict on a material point, surface the conflict rather than guessing.
-- For code review, use `daedalus-core:code-review`; `mattpocock-skills:code-review` runs only inside the `implement` and `implement-spec` flows. Always use the namespaced name; a bare `code-review` may resolve to another skill or the bundled command.
+- For code review, use `daedalus-core:code-review`, with `--workflow` in Claude Code when the Workflow tool is available; `mattpocock-skills:code-review` runs only inside the `implement` and `implement-spec` flows. Always use the namespaced name; a bare `code-review` may resolve to another skill or the bundled command.
 - The review covers the commits since the merge-base. Pass `--uncommitted` to include staged, unstaged, and untracked changes; without it, the report lists them as a scope gap.
 - Never report overall readiness while required verification is failing, missing, or outside the reviewed scope.
 

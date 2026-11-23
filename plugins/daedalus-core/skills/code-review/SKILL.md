@@ -1,7 +1,7 @@
 ---
 name: code-review
 description: Find-then-verify review of a branch's changes. Independent read-only sub-agents look for defects, a fresh sub-agent re-derives each finding from the code, and the report ranks confirmed findings C/H/M/L with a blocking verdict. Use when asked to review a branch, a diff, or work in progress, or before merging.
-argument-hint: "[base-ref] [--uncommitted] [--spec <path | issue | none>]"
+argument-hint: "[base-ref] [--uncommitted] [--spec <path | issue | none>] [--workflow]"
 ---
 
 # Code review
@@ -16,6 +16,7 @@ Arguments: `$ARGUMENTS`
 
 - `--uncommitted`: also review staged, unstaged, and untracked changes.
 - `--spec <value>`: the spec for this change: a file path, an issue reference such as `#12`, or `none` when there is no spec.
+- `--workflow`: Claude Code only. Run steps 4 to 7 through the plugin's Workflow instead of sub-agents you start; see step 4.
 - Any other argument is the base ref: a commit, branch, or tag.
 
 ## 2. Scope
@@ -113,6 +114,8 @@ A lens in `LENSES OFF` is skipped with the reason `disabled by config`. Every ot
 | `types` | `types.md` | the diff touches type definitions | `no type definitions changed` | none |
 | `comments` | `comments.md` | the diff touches comments or docstrings | `no comments changed` | none |
 | `stack` | `stack.md` | `STACK` is not `none` | `no matching stack plugin installed` | `Rubric skills: <STACK>` |
+
+With `--workflow`, read `REFS/workflow.md` and follow it instead of the rest of this step and steps 5 to 7.
 
 Start every lens that runs as its own finder sub-agent, however small the diff or clear the check results; never review the diff yourself. Start every finder in **one message** so they run in parallel. Each is a fresh general-purpose sub-agent (in Codex, a fresh sub-agent). Use this prompt, filled in:
 

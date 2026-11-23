@@ -6,7 +6,7 @@ A Claude Code and Codex plugin marketplace for shared engineering rules and work
 
 | Plugin | What it does |
 |---|---|
-| `daedalus-core` | Loads the shared engineering rules in [`plugins/daedalus-core/rules/`](plugins/daedalus-core/rules/) at every session start, and provides the `security-review` skill and the `code-review` skill with its optional per-repo review config (see [Code review](#code-review)). Depends on [`mattpocock-skills`](https://github.com/mattpocock/skills) (engineering workflow) and the pinned `ponytail` and `caveman` entries below. |
+| `daedalus-core` | Loads the shared engineering rules in [`plugins/daedalus-core/rules/`](plugins/daedalus-core/rules/) at every session start, and provides the `security-review` skill and the `code-review` skill with its optional per-repo review config and its Workflow orchestration for Claude Code (see [Code review](#code-review)). Depends on [`mattpocock-skills`](https://github.com/mattpocock/skills) (engineering workflow) and the pinned `ponytail` and `caveman` entries below. |
 | `daedalus-writing` | Opt-in editorial skills for Vietnamese (`vietnamizer`), English (`clarity`), Japanese documents (`natural-japanese`), and Japanese correspondence (`slop-nuki`). Depends on `daedalus-core`. |
 | `daedalus-java` | Skill `java-coding-standards`: framework-agnostic Java standards. Depends on `daedalus-core`. |
 | `daedalus-springboot` | Skills `spring-coding-standards`, `springboot-patterns`, `springboot-security`, `springboot-verification`, `hexagonal-architecture`, `jpa-patterns`, and the `java-build-resolver` agent. Depends on `daedalus-java`. |
@@ -53,6 +53,12 @@ Commit this to the project's `.claude/settings.json`. Teammates are offered the 
 /plugin install daedalus-core@daedalus
 ```
 
+### Workflow path
+
+In Claude Code, add `--workflow`. The skill still resolves the scope and finds the spec, then the plugin's `code-review-workflow` Workflow script starts the finders and verifiers and writes the report. Both paths use the same lenses and report format. On the eval suite, the Workflow path ran about 28% faster and cost about 22% less per review: about $0.58 and 68 seconds on a small synthetic diff, against $0.75 and 95 seconds. Its C/H recall was slightly lower, 0.97 against 1.00. [ADR 0001](docs/adr/0001-workflow-orchestration-for-code-review.md) records the numbers and the decision.
+
+The Workflow path works in Claude Code only, and Claude Code asks for permission each time it runs. Pro users must first turn on dynamic workflows in `/config`, and an organization can turn workflows off. When the Workflow tool is not available, the review stops and says to rerun without `--workflow`.
+
 ### Codex
 
 Codex reads this marketplace's `.claude-plugin/` manifests, skills, and hooks as they are, but it ignores `dependencies`. Install every plugin yourself:
@@ -89,6 +95,7 @@ If you installed `caveman@caveman` or `ponytail@ponytail` from their own marketp
 /daedalus-core:code-review develop          # the merge-base with develop to HEAD
 /daedalus-core:code-review --uncommitted    # also staged, unstaged, and untracked changes
 /daedalus-core:code-review --spec #12       # the spec: a file path, an issue, or none
+/daedalus-core:code-review --workflow       # Claude Code: run the agents through the Workflow script
 ```
 
 Without `--spec`, the review takes the spec from issue references in the commit messages, then from the review config, then from a file in `docs/`, `specs/`, `spec/`, or `.scratch/` named after the branch. If it finds none, it asks you.
@@ -96,6 +103,12 @@ Without `--spec`, the review takes the spec from issue references in the commit 
 ### Review config
 
 A project can tune the review with an optional Markdown file, usually `docs/agents/code-review.md`, which the agent-skills section of its `AGENTS.md` or `CLAUDE.md` points to. It lists spec sources and how to read their latest version, check commands (lint, type check, tests) whose results the finders and verifiers use as evidence, lenses to turn off, and findings not to report. The review reads a committed config from the base branch, so a branch cannot turn off its own review; a config that git does not track is read from the working tree. Allow the check commands in the project's permissions, or the report marks them as not run. See [the config format](plugins/daedalus-core/skills/code-review/references/review-config.md).
+
+### Workflow path
+
+In Claude Code, add `--workflow`. The skill still resolves the scope and finds the spec, then the plugin's `code-review-workflow` Workflow script starts the finders and verifiers and writes the report. Both paths use the same lenses and report format. On the eval suite, the Workflow path ran about 28% faster and cost about 22% less per review: about $0.58 and 68 seconds on a small synthetic diff, against $0.75 and 95 seconds. Its C/H recall was slightly lower, 0.97 against 1.00. [ADR 0001](docs/adr/0001-workflow-orchestration-for-code-review.md) records the numbers and the decision.
+
+The Workflow path works in Claude Code only, and Claude Code asks for permission each time it runs. Pro users must first turn on dynamic workflows in `/config`, and an organization can turn workflows off. When the Workflow tool is not available, the review stops and says to rerun without `--workflow`.
 
 ### Codex
 

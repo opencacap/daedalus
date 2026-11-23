@@ -1,0 +1,23 @@
+{
+  "cases": {
+    "seeded-bug": {"defects": [{"file": "src/stats.py", "lines": [13, 13], "severity": "CH"}], "lenses": ["correctness-a", "correctness-b", "security", "error-handling", "standards"]},
+    "clean-change": {"clean": true, "lenses": ["correctness-a", "correctness-b", "security", "error-handling", "standards"]},
+    "duplicate": {"defects": [{"file": "src/tokens.py", "lines": [9, 9], "severity": "CH"}], "lenses": ["correctness-a", "correctness-b", "security", "error-handling", "standards"]},
+    "pre-existing": {"clean": true, "defects": [{"file": "src/money.py", "lines": [11, 11]}], "lenses": ["correctness-a", "correctness-b", "security", "error-handling", "standards"]},
+    "uncommitted-flag": {"defects": [{"file": "src/stats.py", "lines": [18, 18], "severity": "CH"}], "lenses": ["correctness-a", "correctness-b", "security", "error-handling", "standards"]},
+    "uncommitted-no-flag": {"clean": true, "lenses": ["correctness-a", "correctness-b", "security", "error-handling", "standards"]},
+    "security": {"defects": [{"file": "src/users.py", "lines": [7, 7], "severity": "CH"}], "lenses": ["correctness-a", "correctness-b", "security", "error-handling", "standards"]},
+    "error-handling": {"defects": [{"file": "src/orders.py", "lines": [10, 12], "severity": "CH"}], "lenses": ["correctness-a", "correctness-b", "security", "error-handling", "standards"]},
+    "standards": {"clean": true, "defects": [{"file": "src/invoices.py", "lines": [7, 7], "severity": "M"}, {"file": "src/invoices.py", "lines": [10, 12], "severity": "L"}], "lenses": ["correctness-a", "correctness-b", "security", "error-handling", "standards"]},
+    "spec": {"defects": [{"file": "src/discounts.py", "lines": [8, 8], "severity": "CH"}, {"file": "src/discounts.py"}], "lenses": ["correctness-a", "correctness-b", "security", "error-handling", "standards", "spec"]},
+    "tests": {"clean": true, "defects": [{"file": "tests/test_stats.py", "lines": [8, 10], "severity": "M"}], "lenses": ["correctness-a", "correctness-b", "security", "error-handling", "standards", "tests"]},
+    "types": {"defects": [{"file": "src/grid.py", "lines": [5, 6], "severity": "CH"}], "lenses": ["correctness-a", "correctness-b", "security", "error-handling", "standards", "types"]},
+    "comments": {"clean": true, "defects": [{"file": "src/directory.py", "lines": [4, 9], "severity": "M"}], "lenses": ["correctness-a", "correctness-b", "security", "error-handling", "standards", "comments"]},
+    "stack": {"defects": [{"file": "src/tags.py", "lines": [4, 4], "severity": "CH"}], "lenses": ["correctness-a", "correctness-b", "security", "error-handling", "standards", "stack"]},
+    "config-lens-off": {"clean": true, "lenses": ["correctness-a", "correctness-b", "security", "standards"]},
+    "config-do-not-report": {"clean": true, "lenses": ["correctness-a", "correctness-b", "security", "error-handling", "standards"]},
+    "config-spec-source": {"defects": [{"file": "src/gift_cards.py", "lines": [4, 8], "severity": "CH"}], "lenses": ["correctness-a", "correctness-b", "security", "error-handling", "standards", "spec"]},
+    "config-local": {"clean": true, "lenses": ["correctness-a", "correctness-b", "security", "standards"]},
+    "config-check-fails": {"defects": [{"file": "src/stats.py", "lines": [13, 13], "severity": "CH"}], "lenses": ["correctness-a", "correctness-b", "security", "error-handling", "standards", "tests"]}
+  }
+}
