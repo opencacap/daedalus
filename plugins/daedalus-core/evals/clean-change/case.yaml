@@ -1,6 +1,6 @@
 schema_version: "1.1"
 name: clean-change
-description: A correct change produces no blocking finding, and the summary names each skipped lens with its reason.
+description: A correct change in a repo with no review config produces no blocking finding, runs on the defaults, and the summary names each skipped lens with its reason.
 tags: [correctness, precision]
 context:
   scaffold_script: fixture.sh
@@ -24,3 +24,6 @@ graders:
   - name: no-spec-available
     type: regex
     pattern: "### Spec coverage\\s+No spec available\\."
+  - name: no-config-defaults
+    type: regex
+    pattern: "### Checks\\s+No checks configured\\.[\\s\\S]*Config: none\\."

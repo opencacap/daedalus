@@ -48,14 +48,25 @@ Collect the paths that exist (use file search; do not read them yourself):
 
 Call this list `STANDARDS`. Sub-agents get the paths, not the contents, and so do the shared rules in `RULES`.
 
+### Review config
+
+Find the review config: the Markdown file that the repo's agent-skills section names for code review, usually `docs/agents/code-review.md`. That section is in the root `AGENTS.md` or `CLAUDE.md`, a file one of them imports with `@<path>`, or `.claude/rules/`. Read the config at the merge-base with `git show <merge-base>:<path>`, never from the working tree: the change under review must not tune its own review. Its format is in `REFS/review-config.md`.
+
+- No config: every default below applies.
+- The config is not at the merge-base: use no config, and record the scope gap `review config <path> is not on the base branch; defaults used`.
+- The diff changes the config: use the merge-base version, and record the scope gap `this diff changes the review config; the base version was used`.
+
+Record `CONFIG`: its path, or `none`. From its sections, record `SPEC SOURCES`, `CHECKS TO RUN`, `LENSES OFF`, and `DO NOT REPORT`, each `none` when absent.
+
 ### Spec
 
 Find the spec in this order and stop at the first source that gives one:
 
-1. **Argument.** `--spec none` means there is no spec. A path: use that file; if it does not exist, ask as in source 4. An issue reference: read it as in source 2.
+1. **Argument.** `--spec none` means there is no spec. A path: use that file; if it does not exist, ask as in source 5. An issue reference: read it as in source 2.
 2. **Commit messages.** Run `git log --format=%B <merge-base>..HEAD` and collect issue and merge request references (`#12`, `Closes #12`, GitLab `!12`, tracker keys such as `ABC-123`). Find the repo's issue tracker doc: the root `AGENTS.md` or `CLAUDE.md` points to it. Read each referenced issue the way that doc says. Without a tracker doc, skip this source.
-3. **Spec file.** Search `docs/`, `specs/`, `spec/`, and `.scratch/` for a Markdown file whose path matches the branch name (`git branch --show-current`, without a prefix such as `feat/`) or the feature the commit messages name.
-4. **Ask.** Ask the developer exactly `Where is the spec for this change? Reply with a file path or an issue reference, or "none" if there is no spec.` Use your question tool if you have one; otherwise make the question your whole reply and wait for the answer. Start no sub-agent before the answer.
+3. **Review config.** Follow `SPEC SOURCES` to the spec for this change, and read its latest version the way they say.
+4. **Spec file.** Search `docs/`, `specs/`, `spec/`, and `.scratch/` for a Markdown file whose path matches the branch name (`git branch --show-current`, without a prefix such as `feat/`) or the feature the commit messages name.
+5. **Ask.** Ask the developer exactly `Where is the spec for this change? Reply with a file path or an issue reference, or "none" if there is no spec.` Use your question tool if you have one; otherwise make the question your whole reply and wait for the answer. Start no sub-agent before the answer.
 
 If the developer answers `none`, there is no spec. Record `SPEC`: the spec's path, or the issue text you read; `SPEC SOURCE`: the path or the issue reference; or `none`.
 
@@ -81,9 +92,13 @@ Read the list of skills available in this session, which your host gives you; do
   git diff --name-only -G '(^|[[:space:]])(#|//|--[[:space:]])|/[*]|<!--|^[[:space:]]*[*]|["]{3}' <RANGE> -- . ':(exclude)*.md' ':(exclude)*.mdx' ':(exclude)*.rst' ':(exclude)*.txt'
   ```
 
+### Checks
+
+Run each command in `CHECKS TO RUN` from the repository root, exactly as written, one per call, with your shell tool's longest timeout up to 10 minutes. These are the only commands the review runs that are not `git`. Record `CHECKS`, one line per command: `PASS`; `FAIL`, followed by the output lines that show the failure (at most 20, quoted); or `NOT RUN (<reason>)` when the host refuses it or it times out. When `READ` is `HEAD`, add that the checks ran on a working tree with uncommitted changes. With no checks, `CHECKS` is `none`.
+
 ## 4. Find
 
-Each lens runs when its condition holds. Otherwise it is skipped, and the summary names it with the skip reason from the table.
+A lens in `LENSES OFF` is skipped with the reason `disabled by config`. Every other lens runs when its condition holds. Otherwise it is skipped, and the summary names it with the skip reason from the table.
 
 | Lens id | Brief (in `REFS/lenses/`) | Runs when | Skip reason | Lens input |
 | --- | --- | --- | --- | --- |
@@ -116,6 +131,8 @@ Untracked files under review (read them in full): <UNTRACKED>.
 Read file contents from: <READ>.
 Repo standards: <STANDARDS, or none>.
 Shared rules: every file in RULES.
+Check results (evidence): <CHECKS, or none>.
+Do not report anything on the repo's list: <DO NOT REPORT, or none>.
 <lens input, omitted when none>
 ```
 
@@ -127,7 +144,7 @@ Sub-agents may run in the background. Wait for every result to arrive; never run
 
 1. Keep the spec lens's `COVERAGE` block for the report. Parse every `FINDING` block. Drop a block that lacks `file`, `line`, `claim`, or `failure`, or whose lens requires a `rule` (see `REFS/finding-schema.md`) and gives `none`, and record the scope gap `<lens id> returned a malformed finding`.
 2. Set the severity of every finding whose `rule` starts with `smell:` to L.
-3. Drop findings in a category that `REFS/suppression.md` marks for the orchestrator to drop, and count them as suppressed. Leave every other finding to the verifier.
+3. Drop findings in a category that `REFS/suppression.md` marks for the orchestrator to drop, and findings that match a `DO NOT REPORT` entry (the place it names and the issue it describes). Count them as suppressed. Leave every other finding to the verifier.
 4. Merge duplicates: same file, overlapping or adjacent lines, and the same root cause. The merged finding keeps the highest severity, lists every lens that reported it, keeps every cited rule, and keeps the clearest title, claim, failure, and fix.
 
 ## 6. Verify
@@ -150,6 +167,7 @@ Untracked files under review: <UNTRACKED>.
 Read file contents from: <READ>.
 Repo standards: <STANDARDS, or none>.
 Shared rules: every file in RULES.
+Check results (evidence): <CHECKS, or none>.
 ```
 
 Apply each verdict:

@@ -6,7 +6,7 @@ A Claude Code and Codex plugin marketplace for shared engineering rules and work
 
 | Plugin | What it does |
 |---|---|
-| `daedalus-core` | Loads the shared engineering rules in [`plugins/daedalus-core/rules/`](plugins/daedalus-core/rules/) at every session start, and provides the `security-review` skill. Depends on [`mattpocock-skills`](https://github.com/mattpocock/skills) (engineering workflow) and the pinned `ponytail` and `caveman` entries below. |
+| `daedalus-core` | Loads the shared engineering rules in [`plugins/daedalus-core/rules/`](plugins/daedalus-core/rules/) at every session start, and provides the `code-review` and `security-review` skills (see [Code review](#code-review)). Depends on [`mattpocock-skills`](https://github.com/mattpocock/skills) (engineering workflow) and the pinned `ponytail` and `caveman` entries below. |
 | `daedalus-writing` | Opt-in editorial skills for Vietnamese (`vietnamizer`), English (`clarity`), Japanese documents (`natural-japanese`), and Japanese correspondence (`slop-nuki`). Depends on `daedalus-core`. |
 | `daedalus-java` | Skill `java-coding-standards`: framework-agnostic Java standards. Depends on `daedalus-core`. |
 | `daedalus-springboot` | Skills `spring-coding-standards`, `springboot-patterns`, `springboot-security`, `springboot-verification`, `hexagonal-architecture`, `jpa-patterns`, and the `java-build-resolver` agent. Depends on `daedalus-java`. |
@@ -79,6 +79,29 @@ If you installed caveman with its own installer (an entry in `~/.codex/hooks.jso
 A dependency cannot be disabled while `daedalus-core` is enabled. To keep normal replies, set caveman's default mode instead: `{"defaultMode": "off"}` in `~/.config/caveman/config.json`, or `CAVEMAN_DEFAULT_MODE=off`.
 
 If you installed `caveman@caveman` or `ponytail@ponytail` from their own marketplaces before, uninstall them; otherwise their hooks run twice.
+
+## Code review
+
+`/daedalus-core:code-review` reviews a branch and reports; it never edits files, posts comments, or merges. Read-only sub-agents look for defects through separate lenses: correctness (two passes), security, error handling, standards, spec, tests, types, comments, and stack (the `*-patterns` and `*-coding-standards` skills of the installed `daedalus-*` stack plugins). A fresh sub-agent re-derives each finding from the code. The report ranks confirmed findings C/H/M/L, gives a blocking verdict, and lists the lenses that ran, the lenses that were skipped and why, and any gap in scope.
+
+```text
+/daedalus-core:code-review                  # the merge-base with the default branch to HEAD
+/daedalus-core:code-review develop          # the merge-base with develop to HEAD
+/daedalus-core:code-review --uncommitted    # also staged, unstaged, and untracked changes
+/daedalus-core:code-review --spec #12       # the spec: a file path, an issue, or none
+```
+
+Without `--spec`, the review takes the spec from issue references in the commit messages, then from the review config, then from a file in `docs/`, `specs/`, `spec/`, or `.scratch/` named after the branch. If it finds none, it asks you.
+
+### Review config
+
+A project can tune the review with an optional Markdown file, usually `docs/agents/code-review.md`, which the agent-skills section of its `AGENTS.md` or `CLAUDE.md` points to. It lists spec sources and how to read their latest version, check commands (lint, type check, tests) whose results the finders and verifiers use as evidence, lenses to turn off, and findings not to report. The review reads the config from the base branch, so a branch cannot turn off its own review. Allow the check commands in the project's permissions, or the report marks them as not run. See [the config format](plugins/daedalus-core/skills/code-review/references/review-config.md).
+
+### Codex
+
+The skill is plain Markdown plus sub-agents, so Codex can run it the same way with its `multi_agent` feature, which is on by default. The eval suite runs in Claude Code only, so Codex support is untested.
+
+The eval suite and how to run it are in [`plugins/daedalus-core/evals/`](plugins/daedalus-core/evals/README.md).
 
 ## Writing
 

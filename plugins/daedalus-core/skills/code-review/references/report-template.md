@@ -42,10 +42,25 @@ Each reported finding gets a tag: its severity letter and a number, for example 
 
 <the coverage table below, or "No spec available.">
 
+### Checks
+
+<one line per check, as below, or "No checks configured.">
+
 ### Summary
 
-Lenses run: <ids>. Lenses skipped: <id (reason), ...>. Findings: C<n> H<n> M<n> L<n> introduced, C<n> H<n> M<n> L<n> pre-existing, <n> need a human. Dropped: <n> suppressed, <n> refuted, <n> uncertain M/L. Scope: <n> files, `<base>`...<HEAD, or HEAD plus uncommitted changes>. Scope gaps: <gaps, or none>.
+Lenses run: <ids>. Lenses skipped: <id (reason), ...>. Findings: C<n> H<n> M<n> L<n> introduced, C<n> H<n> M<n> L<n> pre-existing, <n> need a human. Dropped: <n> suppressed, <n> refuted, <n> uncertain M/L. Config: <path, or none>. Checks: <`<command>` PASS | FAIL | NOT RUN, ...; or none>. Scope: <n> files, `<base>`...<HEAD, or HEAD plus uncommitted changes>. Scope gaps: <gaps, or none>.
 ```
+
+## Check line
+
+````markdown
+- `<command>`: <PASS | FAIL | NOT RUN (<reason>)>
+  ```text
+  <for FAIL only: the output lines that show the failure, quoted>
+  ```
+````
+
+When the checks ran on a working tree with uncommitted changes, end the section with `Checks ran on the working tree, which holds uncommitted changes.`
 
 ## Coverage table
 
@@ -62,4 +77,4 @@ When the spec lens ran but returned no coverage block, write `Spec: <SPEC SOURCE
 ## Rules
 
 - The verdict is `BLOCKING` only when "Introduced by this diff" holds a C or H finding. Its reason names those tags, for example `H1 and H2 are confirmed and introduced by this diff.` Otherwise the verdict is `NOT BLOCKING` and its reason is `no confirmed C or H finding introduced by this diff.`
-- The summary is one paragraph. Name every scope gap in it, such as uncommitted changes that were not reviewed or a finder that returned no result.
+- The summary is one paragraph. Name every scope gap in it, such as uncommitted changes that were not reviewed, a finder that returned no result, or a check that did not run.

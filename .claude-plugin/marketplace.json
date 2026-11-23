@@ -10,7 +10,7 @@
     {
       "name": "daedalus-core",
       "source": "./plugins/daedalus-core",
-      "description": "Shared engineering rules loaded at session start and a security-review skill, with Matt Pocock's skills as the engineering workflow."
+      "description": "Shared engineering rules loaded at session start, plus the code-review and security-review skills, with Matt Pocock's skills as the engineering workflow."
     },
     {
       "name": "daedalus-writing",

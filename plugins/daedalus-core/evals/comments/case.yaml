@@ -13,13 +13,13 @@ execution:
 graders:
   - name: finding-at-docstring
     type: regex
-    pattern: "\\*\\*M\\d+ — [^\\n]*\\n- Location: `src/directory\\.py:(?:\\d+-)?(?:4|5)\\b"
+    pattern: "\\*\\*M\\d+ — [^\\n]*\\n- Location: `src/directory\\.py:(?:\\d+-)?(?:4|5|9)\\b"
   - name: found-by-comments-lens
     type: regex
-    pattern: "- Location: `src/directory\\.py:(?:\\d+-)?(?:4|5)\\b[^\\n]*\\n- Lenses: [^\\n]*\\bcomments\\b"
+    pattern: "- Location: `src/directory\\.py:(?:\\d+-)?(?:4|5|9)\\b[^\\n]*\\n- Lenses: [^\\n]*\\bcomments\\b"
   - name: verified
     type: regex
-    pattern: "- Location: `src/directory\\.py:(?:\\d+-)?(?:4|5)\\b[^\\n]*(?:\\n- [^\\n]*)*?\\n- Verifier: CONFIRMED"
+    pattern: "- Location: `src/directory\\.py:(?:\\d+-)?(?:4|5|9)\\b[^\\n]*(?:\\n- [^\\n]*)*?\\n- Verifier: CONFIRMED"
   - name: not-blocking
     type: regex
     pattern: "\\*\\*Verdict: NOT BLOCKING\\*\\*"

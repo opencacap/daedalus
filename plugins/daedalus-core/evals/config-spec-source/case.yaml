@@ -1,0 +1,23 @@
+schema_version: "1.1"
+name: config-spec-source
+description: With no spec argument, the review takes the spec from the source the review config lists, reads its latest version, and does not ask for a spec.
+tags: [config, spec]
+context:
+  scaffold_script: fixture.sh
+execution:
+  model: claude-sonnet-5-5
+  max_turns: 40
+  timeout_seconds: 900
+  allowed_tools: [Read, Glob, Grep, Skill, Agent, Bash]
+  prompt: /daedalus-core:code-review
+graders:
+  - name: spec-from-config
+    type: regex
+    pattern: "### Spec coverage\\s+Spec: [^\\n]*product/requirements/gift-cards\\.md"
+  - name: latest-version-read
+    type: regex
+    pattern: "### Spec coverage[\\s\\S]*\\|[^\\n]*(?:more than the balance|over-limit)[^\\n]*\\|\\s*(?:partial|missing)\\b"
+  - name: no-question
+    type: regex
+    pattern: "Where is the spec for this change\\?"
+    match: not_contains
