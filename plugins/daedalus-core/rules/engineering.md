@@ -91,6 +91,7 @@ Apply these principles proportionally to the change and its risk.
 
 ## 8. Documentation and Handoffs
 
+- When editing reader-facing text, preserve names, numbers, technical terms, decisions, and the source’s level of certainty. Follow the project glossary and use a tone appropriate for the audience. For review requests, give feedback and leave the draft intact.
 - Keep architectural decisions in project ADRs and shared domain language in the project's glossary when those artifacts exist.
 - Update documentation when the change affects a public contract, operational procedure, architecture decision, or enduring domain concept.
 - For long-running work, hand off the current state, open decisions, verification evidence, and next actions concisely.
