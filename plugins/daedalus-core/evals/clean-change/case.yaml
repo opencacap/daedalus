@@ -14,3 +14,6 @@ graders:
   - name: not-blocking
     type: regex
     pattern: "\\*\\*Verdict: NOT BLOCKING\\*\\*"
+  - name: skipped-lenses-with-reasons
+    type: regex
+    pattern: "Lenses skipped: [^\\n]*security[^\\n]*\\(not available in this version\\)"

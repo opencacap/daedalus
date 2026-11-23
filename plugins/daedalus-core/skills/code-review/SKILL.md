@@ -25,11 +25,11 @@ Use only `git` commands, one per call, with no pipes, `&&`, or redirection: the 
    - Named base: `git rev-parse --verify --quiet "<base>^{commit}"`. If it fails, stop with `Review stopped: base ref '<base>' does not resolve to a commit.`
    - No base: try `git symbolic-ref --quiet --short refs/remotes/origin/HEAD`, then the first of `main`, `master`, `origin/main`, `origin/master` that `git rev-parse --verify --quiet "<name>^{commit}"` resolves. If none resolves, stop with `Review stopped: no default branch found. Name a base ref.`
 2. **Merge-base.** `git merge-base <base> HEAD`. If it fails, stop with `Review stopped: '<base>' and HEAD share no history.`
-3. **Changed files.**
+3. **Working tree.** Run `git status --porcelain`. If it lists anything and `--uncommitted` is off, record the scope gap `uncommitted changes not reviewed (<n> paths; rerun with --uncommitted)`.
+4. **Changed files.**
    - Default: `git diff --name-status <merge-base> HEAD`.
    - With `--uncommitted`: `git diff --name-status <merge-base>` (index and working tree against the merge-base), plus `git ls-files --others --exclude-standard` for untracked files.
-   - If nothing is listed, stop with `Review stopped: no changes between '<base>' and HEAD.` With `--uncommitted`, end it with `HEAD or in the working tree.` instead.
-4. **Working tree.** Run `git status --porcelain`. If it lists anything and `--uncommitted` is off, record the scope gap `uncommitted changes not reviewed (<n> paths; rerun with --uncommitted)`.
+   - If nothing is listed, stop with `Review stopped: no changes between '<base>' and HEAD.` With `--uncommitted`, end it with `HEAD or in the working tree.` instead. If step 3 recorded a scope gap, add `Uncommitted changes were not reviewed; rerun with --uncommitted.`
 
 Record for the sub-agent prompts:
 
@@ -82,8 +82,8 @@ A finder that fails or returns neither findings nor `NO ISSUES` is a scope gap: 
 
 ## 5. Normalize
 
-1. Parse every `FINDING` block. Drop a block that lacks `file`, `line`, `claim`, or `failure`, and count it as suppressed.
-2. Drop findings in a suppressed category (`REFS/suppression.md`), and count them.
+1. Parse every `FINDING` block. Drop a block that lacks `file`, `line`, `claim`, or `failure`, and record the scope gap `<lens id> returned a malformed finding`.
+2. Drop findings in a category that `REFS/suppression.md` marks for the orchestrator to drop, and count them as suppressed. Leave every other finding to the verifier.
 3. Merge duplicates: same file, overlapping or adjacent lines, and the same root cause. The merged finding keeps the highest severity, lists every lens that reported it, and keeps the clearest title, claim, failure, and fix.
 
 ## 6. Verify

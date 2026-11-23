@@ -33,8 +33,8 @@ To run one case, add `--case <name>`.
 | `bad-ref` | A feature branch; the prompt names a base that does not exist | The run stops with `Review stopped: base ref ...` and starts no sub-agent |
 | `empty-diff` | A clean checkout of `main` | The run stops with `Review stopped: no changes ...` and starts no sub-agent |
 | `seeded-bug` | The diff adds `mean()`, which divides by `len - 1` | A C or H finding at `src/stats.py:13`, a blocking verdict, and at least 3 sub-agents (2 finders, 1 verifier) |
-| `clean-change` | The diff adds a correct `mean()` | The verdict is not blocking |
-| `duplicate` | The diff adds `is_expired()` with an inverted comparison | Exactly one finding at `src/tokens.py:9`, listing both correctness passes |
+| `clean-change` | The diff adds a correct `mean()` | The verdict is not blocking, and the summary names the skipped lenses with their reason |
+| `duplicate` | The diff adds `is_expired()` with an inverted comparison; the prompt names `main` as the base | Exactly one finding at `src/tokens.py:9`, listing both correctness passes |
 | `pre-existing` | `main` already has an inverted `percent_of()`; the diff adds a correct function to the same file | The finding at `src/money.py:11` is under "Pre-existing", not under "Introduced by this diff", and the verdict is not blocking |
 | `uncommitted-flag` | A clean commit plus an unstaged `spread()` that subtracts in the wrong order | With `--uncommitted`: a C or H finding at `src/stats.py:18` and a blocking verdict |
 | `uncommitted-no-flag` | The same fixture | Without the flag: no finding at `src/stats.py:18`, the gap `uncommitted changes not reviewed` in the summary, and a non-blocking verdict |
