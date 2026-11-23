@@ -53,12 +53,6 @@ Commit this to the project's `.claude/settings.json`. Teammates are offered the 
 /plugin install daedalus-core@daedalus
 ```
 
-### Workflow path
-
-In Claude Code, add `--workflow`. The skill still resolves the scope and finds the spec, then the plugin's `code-review-workflow` Workflow script starts the finders and verifiers and writes the report. Both paths use the same lenses and report format. On the eval suite, the Workflow path ran about 28% faster and cost about 22% less per review: about $0.58 and 68 seconds on a small synthetic diff, against $0.75 and 95 seconds. Its C/H recall was slightly lower, 0.97 against 1.00. [ADR 0001](docs/adr/0001-workflow-orchestration-for-code-review.md) records the numbers and the decision.
-
-The Workflow path works in Claude Code only, and Claude Code asks for permission each time it runs. Pro users must first turn on dynamic workflows in `/config`, and an organization can turn workflows off. When the Workflow tool is not available, the review stops and says to rerun without `--workflow`.
-
 ### Codex
 
 Codex reads this marketplace's `.claude-plugin/` manifests, skills, and hooks as they are, but it ignores `dependencies`. Install every plugin yourself:

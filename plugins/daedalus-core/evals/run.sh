@@ -40,7 +40,8 @@ PY
 
 if $workflow; then
   # The prompt gains --workflow and the Workflow tool. Workflow agents are not Agent tool
-  # calls, so a grader that requires Agent calls requires one Workflow call instead.
+  # calls, so a grader that requires Agent calls requires one Workflow call instead, and
+  # a case that must start no agent must start no Workflow either.
   python3 - "$tmp/daedalus-core/evals" <<'PY'
 import re, sys
 from pathlib import Path
@@ -50,6 +51,11 @@ for case in Path(sys.argv[1]).glob("*/case.yaml"):
     text = re.sub(r"^(\s+prompt: /daedalus-core:code-review)\b", r"\1 --workflow", text, flags=re.M)
     text = re.sub(r"^(\s+allowed_tools: \[.*)\]$", r"\1, Workflow]", text, flags=re.M)
     text = re.sub(r"tool: Agent\n(\s+)min: [1-9]\d*", r"tool: Workflow\n\1min: 1", text)
+    text = re.sub(
+        r"(\n(\s+)- name: \S+\n\s+type: tool_used\n\s+tool: Agent\n\s+min: 0\n\s+max: 0)",
+        r"\1\n\2- name: no-workflow\n\2  type: tool_used\n\2  tool: Workflow\n\2  min: 0\n\2  max: 0",
+        text,
+    )
     case.write_text(text)
 PY
 fi

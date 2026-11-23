@@ -164,6 +164,7 @@ function finderPrompt(id) {
 
 phase('Find')
 const lenses = args.lenses.filter((id) => BRIEFS[id])
+args.lenses.filter((id) => !BRIEFS[id]).forEach((id) => addGap(`unknown lens ${id} not run`))
 const results = await parallel(
   lenses.map((id) => () => agent(finderPrompt(id), { label: `finder:${id}`, phase: 'Find', schema: FINDER_RESULT })),
 )
@@ -323,6 +324,7 @@ if (coverage) {
   for (const row of coverage) {
     if (row.status === 'done') continue
     const requirement = unquote(row.requirement)
+    if (!requirement) continue
     const owner = findings.find((f) => f.rules.some((rule) => unquote(rule).includes(requirement)))
     if (!owner) continue
     if (owner.tag) row.evidence = owner.tag

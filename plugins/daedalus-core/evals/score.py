@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Score `claude plugin eval` results of the code-review skill against case labels.
 
-Usage: score.py --labels <labels.json> <name>=<aggregate-result.json> ... [--json]
+Usage: score.py --labels <labels.json> <name>=<results dir or aggregate-result.json> ... [--json]
 """
 import argparse
 import json
@@ -63,7 +63,7 @@ def ratio(part, whole):
     return part / whole if whole else None
 
 
-def score(labels, results_paths):
+def score(labels, path):
     ch_total = ch_hits = reported = true = clean_runs = clean_blocking = 0
     compliant = scored_runs = 0
     noncompliant = []
@@ -71,50 +71,49 @@ def score(labels, results_paths):
     by_run = {}  # run index -> [C/H hits, C/H defects]
     passed = []
     flaky = []
-    for path in results_paths:
-        for case in json.loads(path.read_text(encoding="utf-8"))["cases"]:
-            runs = case["arms"]["with"]
-            outcomes = {run["passed"] for run in runs}
-            passed += [run["passed"] for run in runs]
-            if len(outcomes) > 1:
-                flaky.append(case["name"])
-            label = labels.get(case["name"])
-            if label is None:
-                continue
-            defects = label.get("defects", [])
-            for index, run in enumerate(runs):
-                report, spawned = read_run(path.parent / run["tracePath"])
-                found = findings(report)
-                ran = LENSES_RUN.search(report)
-                ran = [lens.strip() for lens in ran[1].split(",")] if ran else []
-                ok = (
-                    bool(report)
-                    and set(label.get("lenses", [])) <= set(ran)
-                    and all(f["verified"] for f in found)
-                    and spawned >= len(ran) + len(found)
-                )
-                scored_runs += 1
-                compliant += ok
-                if "costUsd" in run:
-                    costs.append(run["costUsd"])
-                if "durationSeconds" in run:
-                    seconds.append(run["durationSeconds"])
-                if not ok and case["name"] not in noncompliant:
-                    noncompliant.append(case["name"])
-                tally = by_run.setdefault(index, [0, 0])
-                for defect in defects:
-                    if set(defect.get("severity", "CHML")) <= set("CH"):
-                        hit = any(f["severity"] in "CH" and matches(f, defect) for f in found)
-                        ch_total += 1
-                        ch_hits += hit
-                        tally[0] += hit
-                        tally[1] += 1
-                reported += len(found)
-                true += sum(any(matches(f, d) for d in defects) for f in found)
-                if label.get("clean"):
-                    verdict = VERDICT.search(report)
-                    clean_runs += 1
-                    clean_blocking += bool(verdict) and verdict[1] == "BLOCKING"
+    for case in json.loads(path.read_text(encoding="utf-8"))["cases"]:
+        runs = case["arms"]["with"]
+        outcomes = {run["passed"] for run in runs}
+        passed += [run["passed"] for run in runs]
+        if len(outcomes) > 1:
+            flaky.append(case["name"])
+        label = labels.get(case["name"])
+        if label is None:
+            continue
+        defects = label.get("defects", [])
+        for index, run in enumerate(runs):
+            report, spawned = read_run(path.parent / run["tracePath"])
+            found = findings(report)
+            ran = LENSES_RUN.search(report)
+            ran = [lens.strip() for lens in ran[1].split(",")] if ran else []
+            ok = (
+                bool(report)
+                and set(label.get("lenses", [])) <= set(ran)
+                and all(f["verified"] for f in found)
+                and spawned >= len(ran) + len(found)
+            )
+            scored_runs += 1
+            compliant += ok
+            if "costUsd" in run:
+                costs.append(run["costUsd"])
+            if "durationSeconds" in run:
+                seconds.append(run["durationSeconds"])
+            if not ok and case["name"] not in noncompliant:
+                noncompliant.append(case["name"])
+            tally = by_run.setdefault(index, [0, 0])
+            for defect in defects:
+                if set(defect.get("severity", "CHML")) <= set("CH"):
+                    hit = any(f["severity"] in "CH" and matches(f, defect) for f in found)
+                    ch_total += 1
+                    ch_hits += hit
+                    tally[0] += hit
+                    tally[1] += 1
+            reported += len(found)
+            true += sum(any(matches(f, d) for d in defects) for f in found)
+            if label.get("clean"):
+                verdict = VERDICT.search(report)
+                clean_runs += 1
+                clean_blocking += bool(verdict) and verdict[1] == "BLOCKING"
     recalls = [hits / total for hits, total in by_run.values() if total]
     return {
         "ch_recall": ratio(ch_hits, ch_total),
@@ -176,11 +175,13 @@ def main(argv=None):
     configs = {}
     for item in args.configs:
         name, _, path = item.partition("=")
+        if not name or not path:
+            parser.error(f"expected NAME=RESULTS, got {item!r}")
+        if name in configs:
+            parser.error(f"configuration {name} given twice")
         path = Path(path)
-        if path.is_dir():
-            path /= "aggregate-result.json"
-        configs.setdefault(name, []).append(path)
-    scores = {name: score(labels, paths) for name, paths in configs.items()}
+        configs[name] = path / "aggregate-result.json" if path.is_dir() else path
+    scores = {name: score(labels, path) for name, path in configs.items()}
     print(json.dumps(rounded(scores), indent=2) if args.json else table(scores))
 
 

@@ -4,20 +4,20 @@ status: accepted
 
 # Workflow orchestration for code review in Claude Code
 
-`daedalus-core:code-review` has two orchestrations over the same reference files. In the skill path, the model that runs the skill starts the finders and verifiers itself and writes the report. In the Workflow path (`--workflow`), the skill still resolves the scope and gathers the context, then the `code-review-workflow` Workflow script starts the agents, merges and verifies the findings, and renders the report in code. On the same eval set, the Workflow path ran about 28% faster and about 22% cheaper per review. Its C/H recall was slightly lower, and it was a little less stable from run to run. Under the selection rule fixed in #2 before measuring, lower wall time alone qualifies, so Claude Code users are pointed to `--workflow`. The skill path stays the default, because Codex and hosts without workflows can only run that.
+`daedalus-core:code-review` has two orchestrations over the same reference files. In the skill path, the model that runs the skill starts the finders and verifiers itself and writes the report. In the Workflow path (`--workflow`), the skill still resolves the scope and gathers the context inline, then the `code-review-workflow` Workflow script starts the agents, merges and verifies the findings, and renders the report in code. #2 asked for a Workflow that runs the whole pipeline. The scope and context steps stay inline for two reasons. A Workflow cannot ask the developer where the spec is. A bad ref or an empty diff must stop the review before any agent starts. On the same eval set, the Workflow path ran about 28% faster and about 22% cheaper per review. Its C/H recall was slightly lower, and it was a little less stable from run to run. Under the selection rule fixed in #2 before measuring, lower wall time alone qualifies, so Claude Code users are pointed to `--workflow`. The skill path stays the default, because Codex and hosts without workflows can only run that.
 
 ## Selection rule
 
-The rule was fixed in #2: the Workflow replaces the skill-driven orchestration only if it has higher C/H recall at equal or better precision, or materially lower run-to-run variance or wall time. #2 gave no number for "materially". These readings were written down at 2026-11-23T10:06:56Z, before any result of the decision runs was read:
+#2 fixed the rule: the Workflow replaces the skill-driven orchestration only if it has higher C/H recall at equal or better precision, or materially lower run-to-run variance or wall time. #2 gave no number for "materially". I wrote these readings down at 2026-11-23T10:06:56Z, before I read any result of the decision runs. By then, one 1-run pilot of each path had finished: the skill suite while #5 was built, and the Workflow suite to check that its cases pass. I did not compare their times before I set the bar. Their mean wall times, 83 s and 65 s, differ by 22%, which is under the bar.
 
 - Higher C/H recall: a strictly higher pooled C/H recall over the 3 runs.
-- Equal or better precision: precision no more than 0.02 lower.
+- Equal or better precision: precision no more than 0.02 lower. This reading allows a small drop that the literal rule does not; it did not decide the outcome.
 - Materially lower variance: C/H recall stdev at least 0.05 lower, and fewer flaky cases.
 - Materially lower wall time: mean wall time per scored review at least 25% lower.
 
 ## Measurement
 
-Both paths ran the 22 cases of `plugins/daedalus-core/evals`, `--runs 3`, on Claude Code 2.1.323. Every case pins `claude-sonnet-5-5`, and the judge model was pinned to `claude-haiku-5-5`, although no case has an `llm` grader. Both suites ran on 2026-11-23, at the same time on one machine with `-j 4` each, so both had the same load. `evals/score.py` scored the 19 cases that end in a report against `evals/labels.json`:
+Both paths ran the 22 cases of `plugins/daedalus-core/evals`, `--runs 3`, on Claude Code 2.1.323. Every case pins `claude-sonnet-5-5`, and the runs pinned the judge model to `claude-haiku-5-5`, although no case has an `llm` grader. Both suites ran on 2026-11-23, at the same time on one machine with `-j 4` each, so both had the same load. `evals/score.py` scored the 19 cases that end in a report against `evals/labels.json`:
 
 | Path | C/H recall | Recall stdev | Precision | Clean FP rate | Pass rate | Compliance | Cost/review (USD) | Wall time (s) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -35,10 +35,10 @@ Both paths ran the 22 cases of `plugins/daedalus-core/evals`, `--runs 3`, on Cla
 - Variance: not met (stdev 0.05 against 0.00, and 2 flaky cases against none).
 - Wall time: met (68 s against 95 s, 28% lower).
 
-The Workflow path wins under the rule. The shared rules and the README point Claude Code users to `--workflow`. The skill path is not removed. It is the Codex path, and the fallback wherever the Workflow tool is missing or refused.
+The Workflow path wins under the rule. The shared rules and the README point Claude Code users to `--workflow`. The skill path stays. It is the Codex path, and the path to use wherever the Workflow tool is missing or refused.
 
 ## Consequences
 
 - The Workflow path runs in Claude Code only. Each run needs permission for the Workflow tool, and Pro users must turn on dynamic workflows. An organization can turn workflows off, and a sub-agent cannot start one. If the call fails, the review stops and says to rerun without `--workflow`.
 - Both paths read the same lens, finder, verifier, and report reference files. A change to a brief applies to both. A change to the orchestration steps in `SKILL.md` must be mirrored in `workflows/code-review-workflow.js`.
-- Before a later decision is revisited, rerun both paths through `evals/run.sh` and `evals/score.py`. The private replay tier can use the same scorer.
+- To revisit this decision, rerun both paths through `evals/run.sh` and score them with `evals/score.py`. Private replays of real pull requests, kept outside this repository, can use the same scorer.

@@ -241,6 +241,17 @@ class ScoreTest(unittest.TestCase):
         self.assertEqual(result.returncode, 2)
         self.assertIn(f"trace not found: {trace}", result.stderr)
 
+    def test_a_configuration_needs_a_name_and_one_results_path(self):
+        path = Results(self.root, "skill").case("seeded-bug", {"report": report()}).write()
+
+        unnamed = score({"seeded-bug": SEEDED}, ("", path))
+        twice = score({"seeded-bug": SEEDED}, ("skill", path), ("skill", path))
+
+        self.assertEqual(unnamed.returncode, 2)
+        self.assertIn("expected NAME=RESULTS", unnamed.stderr)
+        self.assertEqual(twice.returncode, 2)
+        self.assertIn("configuration skill given twice", twice.stderr)
+
     def test_a_results_directory_reads_its_aggregate_result(self):
         results = Results(self.root, "skill").case(
             "seeded-bug", {"report": report(introduced=[finding("H1", "src/stats.py:13")])}
