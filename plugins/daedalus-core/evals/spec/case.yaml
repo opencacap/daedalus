@@ -1,0 +1,25 @@
+schema_version: "1.1"
+name: spec
+description: The review finds the spec file that matches the branch name, reports a requirement implemented wrongly as a C or H finding that quotes it, and shows a missing requirement in the coverage table.
+tags: [spec]
+context:
+  scaffold_script: fixture.sh
+execution:
+  model: claude-sonnet-5-5
+  max_turns: 40
+  timeout_seconds: 900
+  allowed_tools: [Read, Glob, Grep, Skill, Agent, Bash]
+  prompt: /daedalus-core:code-review
+graders:
+  - name: finding-at-seeded-line
+    type: regex
+    pattern: "\\*\\*[CH]\\d+ — [^\\n]*\\n- Location: `src/discounts\\.py:(?:\\d+-)?8\\b"
+  - name: finding-quotes-requirement
+    type: regex
+    pattern: "- Location: `src/discounts\\.py:(?:\\d+-)?8\\b[^\\n]*\\n- Lenses: [^\\n]*\\bspec\\b(?:\\n- [^\\n]*)*?\\n- Rule: [^\\n]*ValueError"
+  - name: coverage-shows-missing-requirement
+    type: regex
+    pattern: "### Spec coverage[\\s\\S]*\\|[^\\n]*describe_discount[^\\n]*\\|\\s*missing\\s*\\|"
+  - name: blocking
+    type: regex
+    pattern: "\\*\\*Verdict: BLOCKING\\*\\*"

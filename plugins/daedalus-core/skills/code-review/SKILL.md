@@ -1,20 +1,21 @@
 ---
 name: code-review
-description: Find-then-verify review of a branch's changes. Independent read-only sub-agents look for defects, a fresh sub-agent re-derives each finding from the code, and the report ranks confirmed findings C/H/M/L with a blocking verdict. Use when asked to review a branch, a diff, or work in progress, or before merging.
-argument-hint: "[base-ref] [--uncommitted]"
+description: Find-then-verify review of a branch's changes. Independent read-only sub-agents look for defects through correctness, security, error-handling, standards, spec, tests, types, comments, and stack lenses; a fresh sub-agent re-derives each finding from the code; and the report ranks confirmed findings C/H/M/L with a blocking verdict and a spec coverage table. Use when asked to review a branch, a diff, or work in progress, or before merging.
+argument-hint: "[base-ref] [--uncommitted] [--spec <path | issue | none>]"
 ---
 
 # Code review
 
 You are the orchestrator. Run inline: resolve the scope, gather context, start finder and verifier sub-agents, and write the report. Never edit files.
 
-`REFS` below is `${CLAUDE_SKILL_DIR}/references`. If your host does not expand `${CLAUDE_SKILL_DIR}`, use the `references/` directory next to this file. `RULES` is the plugin's `rules/` directory, two levels above this skill's directory. Give sub-agents absolute paths.
+`REFS` below is `${CLAUDE_SKILL_DIR}/references`. If your host does not expand `${CLAUDE_SKILL_DIR}`, use the `references/` directory next to this file. `RULES` is the plugin's `rules/` directory, two levels above this skill's directory. `CHECKLIST` is `security-review/SKILL.md`, a sibling of this skill's directory. Give sub-agents absolute paths.
 
 ## 1. Arguments
 
 Arguments: `$ARGUMENTS`
 
 - `--uncommitted`: also review staged, unstaged, and untracked changes.
+- `--spec <value>`: the spec for this change: a file path, an issue reference such as `#12`, or `none` when there is no spec.
 - Any other argument is the base ref: a commit, branch, or tag.
 
 ## 2. Scope
@@ -47,16 +48,55 @@ Collect the paths that exist (use file search; do not read them yourself):
 
 Call this list `STANDARDS`. Sub-agents get the paths, not the contents, and so do the shared rules in `RULES`.
 
+### Spec
+
+Find the spec in this order and stop at the first source that gives one:
+
+1. **Argument.** `--spec none` means there is no spec. A path: use that file; if it does not exist, ask as in source 4. An issue reference: read it as in source 2.
+2. **Commit messages.** Run `git log --format=%B <merge-base>..HEAD` and collect issue references (`#12`, `Closes #12`, GitLab `!12`, tracker keys such as `ABC-123`). Find the repo's issue tracker doc: the root `AGENTS.md` or `CLAUDE.md` points to it. Read each referenced issue the way that doc says. Without a tracker doc, skip this source.
+3. **Spec file.** Search `docs/`, `specs/`, `spec/`, and `.scratch/` for a Markdown file whose path matches the branch name (`git branch --show-current`, without a prefix such as `feat/`) or the feature the commit messages name.
+4. **Ask.** Ask the developer exactly `Where is the spec for this change? Reply with a file path or an issue reference, or "none" if there is no spec.` Use your question tool if you have one; otherwise make the question your whole reply and wait for the answer. Start no sub-agent before the answer.
+
+If the developer answers `none`, there is no spec. Record `SPEC`: the spec's path, or the issue text you read; `SPEC SOURCE`: the path or the issue reference; or `none`.
+
+### Stack
+
+From the skills available in this session, take those of an installed `daedalus-*` plugin other than `daedalus-core` and `daedalus-writing` whose name ends in `-patterns` or `-coding-standards`. Keep the ones whose description matches a language or framework of the changed files. Record their full names (`<plugin>:<skill>`) as `STACK`, or `none`.
+
+### Lens conditions
+
+`RANGE` is `<merge-base> HEAD`, or `<merge-base>` with `--uncommitted`. Run each check with git, one command per call. With `--uncommitted`, also check the untracked files under review, using your file search tool with the same pattern.
+
+- **Code changed:** at least one changed file is source code, not only documentation, prose, data, or images.
+- **Test suite:** `git ls-files -- ':(glob)**/test_*' ':(glob)**/*_test.*' ':(glob)**/*.test.*' ':(glob)**/*.spec.*' ':(glob)**/*Test.*' ':(glob)**/*Tests.*' ':(glob)**/__tests__/**'` lists at least one file.
+- **Type definitions:** this command lists at least one file. It matches added or removed lines that declare a type or a typed field.
+
+  ```text
+  git diff --name-only -G '^[[:space:]]*((export|public|private|protected|internal|abstract|sealed|final|static|data|declare|default|pub)[[:space:]]+)*(class|interface|type|struct|enum|record|trait|protocol|typedef|union)[[:space:]]+[[:alpha:]_]|^[[:space:]]+(readonly[[:space:]]+)?[[:alpha:]_][[:alnum:]_]*[?]?:[[:space:]]*[[:alpha:]_]' <RANGE> -- . ':(exclude)*.md' ':(exclude)*.mdx' ':(exclude)*.rst' ':(exclude)*.txt' ':(exclude)*.yml' ':(exclude)*.yaml'
+  ```
+
+- **Comments:** this command lists at least one file. It matches added or removed lines with a comment marker or a docstring quote.
+
+  ```text
+  git diff --name-only -G '(^|[[:space:]])(#|//|/[*]|--[[:space:]])|^[[:space:]]*[*]|["]{3}' <RANGE> -- . ':(exclude)*.md' ':(exclude)*.mdx' ':(exclude)*.rst' ':(exclude)*.txt'
+  ```
+
 ## 4. Find
 
-Lenses in this version:
+Each lens runs when its condition holds. Otherwise it is skipped, and the summary names it with the skip reason from the table.
 
-| Lens id | Brief | Strategy |
-| --- | --- | --- |
-| `correctness-a` | `REFS/lenses/correctness.md` | A |
-| `correctness-b` | `REFS/lenses/correctness.md` | B |
-
-Not available in this version, so always skipped with the reason `not available in this version`: `security`, `error-handling`, `standards`, `spec`, `tests`, `types`, `comments`, `stack`.
+| Lens id | Brief (in `REFS/lenses/`) | Runs when | Skip reason | Lens input |
+| --- | --- | --- | --- | --- |
+| `correctness-a` | `correctness.md`, strategy A | always | | none |
+| `correctness-b` | `correctness.md`, strategy B | always | | none |
+| `security` | `security.md` | always | | `Checklist: <CHECKLIST>` |
+| `error-handling` | `error-handling.md` | always | | none |
+| `standards` | `standards.md` | always | | none |
+| `spec` | `spec.md` | `SPEC` is not `none` | `no spec available` | `Spec (<SPEC SOURCE>): <SPEC>` |
+| `tests` | `tests.md` | code changed and the repo has a test suite | `no code changed` or `no test suite` | none |
+| `types` | `types.md` | the diff touches type definitions | `no type definitions changed` | none |
+| `comments` | `comments.md` | the diff touches comments or docstrings | `no comments changed` | none |
+| `stack` | `stack.md` | `STACK` is not `none` | `no matching stack plugin installed` | `Rubric skills: <STACK>` |
 
 Start every finder in **one message** so they run in parallel. Each is a fresh general-purpose sub-agent (in Codex, a fresh sub-agent). Use this prompt, filled in:
 
@@ -65,7 +105,7 @@ You are the <lens id> finder in a code review. Read files with your file-reading
 
 Read these files and follow them exactly:
 - REFS/finder.md
-- REFS/lenses/<lens>.md (use strategy <A|B>)
+- REFS/lenses/<brief> (use strategy <A|B> when the brief has strategies)
 - REFS/finding-schema.md
 - REFS/severity.md
 - REFS/suppression.md
@@ -76,19 +116,23 @@ Untracked files under review (read them in full): <UNTRACKED>.
 Read file contents from: <READ>.
 Repo standards: <STANDARDS, or none>.
 Shared rules: every file in RULES.
+<lens input, omitted when none>
 ```
 
 A finder that fails or returns neither findings nor `NO ISSUES` is a scope gap: record `<lens id> returned no result`.
 
+Sub-agents may run in the background. Wait for every result to arrive; never run `sleep` or any other command to wait, and start no background command.
+
 ## 5. Normalize
 
-1. Parse every `FINDING` block. Drop a block that lacks `file`, `line`, `claim`, or `failure`, and record the scope gap `<lens id> returned a malformed finding`.
-2. Drop findings in a category that `REFS/suppression.md` marks for the orchestrator to drop, and count them as suppressed. Leave every other finding to the verifier.
-3. Merge duplicates: same file, overlapping or adjacent lines, and the same root cause. The merged finding keeps the highest severity, lists every lens that reported it, and keeps the clearest title, claim, failure, and fix.
+1. Keep the spec lens's `COVERAGE` block for the report. Parse every `FINDING` block. Drop a block that lacks `file`, `line`, `claim`, or `failure`, or a `standards`, `spec`, or `stack` block whose `rule` is `none`, and record the scope gap `<lens id> returned a malformed finding`.
+2. Set the severity of every finding whose `rule` starts with `smell:` to L.
+3. Drop findings in a category that `REFS/suppression.md` marks for the orchestrator to drop, and count them as suppressed. Leave every other finding to the verifier.
+4. Merge duplicates: same file, overlapping or adjacent lines, and the same root cause. The merged finding keeps the highest severity, lists every lens that reported it, keeps every cited rule, and keeps the clearest title, claim, failure, and fix.
 
 ## 6. Verify
 
-Skip this step when no finding is left. Otherwise start one fresh general-purpose verifier per finding, all in **one message**. The verifier gets the claim and the location, never the finder's failure scenario, fix, severity, or reasoning:
+Skip this step when no finding is left. Otherwise start one fresh general-purpose verifier per finding, all in **one message**. The verifier gets the claim, the location, and the cited rule, never the finder's failure scenario, fix, severity, or reasoning:
 
 ```text
 Read files with your file-reading tool, not the shell. Shell access may be limited to git: run each git command on its own, with no cd, pipes, &&, ;, or redirection.
@@ -98,6 +142,8 @@ Read REFS/verifier.md and follow it exactly.
 Claim: <claim>
 Location: <file>:<line>
 Code at that location: <code>
+Cited rule: <rule, or none>
+Spec (<SPEC SOURCE>): <SPEC; include this line for spec findings only>
 
 Scope: base <base> (merge-base <sha>). Diff: run `<DIFF>`.
 Untracked files under review: <UNTRACKED>.
@@ -114,6 +160,8 @@ Apply each verdict:
 - `UNCERTAIN` at M or L: drop it and count it.
 - No verdict line, or the verifier failed: treat it as `UNCERTAIN`.
 
+Then update the coverage rows: a `partial` or `missing` row whose finding (the one that quotes the same requirement) was refuted becomes `done`; one whose finding is uncertain keeps its status and gets `(unverified)`.
+
 ## 7. Report
 
-Read `REFS/report-template.md` and write the report exactly in that form. It is the whole reply: no preamble, and no offer to fix.
+Read `REFS/report-template.md` and write the report exactly in that form, once every finder and verifier has returned. It is the whole reply and your last message: no preamble, and no offer to fix.

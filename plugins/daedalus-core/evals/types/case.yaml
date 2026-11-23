@@ -1,0 +1,22 @@
+schema_version: "1.1"
+name: types
+description: The types lens reports a dataclass documented as hashable that Python makes unhashable, as a blocking C or H finding at the type definition.
+tags: [types]
+context:
+  scaffold_script: fixture.sh
+execution:
+  model: claude-sonnet-5-5
+  max_turns: 40
+  timeout_seconds: 900
+  allowed_tools: [Read, Glob, Grep, Skill, Agent, Bash]
+  prompt: /daedalus-core:code-review --spec none
+graders:
+  - name: finding-at-type-definition
+    type: regex
+    pattern: "\\*\\*[CH]\\d+ — [^\\n]*\\n- Location: `src/grid\\.py:(?:\\d+-)?(?:5|6)\\b"
+  - name: found-by-types-lens
+    type: regex
+    pattern: "- Location: `src/grid\\.py:(?:\\d+-)?(?:5|6)\\b[^\\n]*\\n- Lenses: [^\\n]*\\btypes\\b"
+  - name: blocking
+    type: regex
+    pattern: "\\*\\*Verdict: BLOCKING\\*\\*"

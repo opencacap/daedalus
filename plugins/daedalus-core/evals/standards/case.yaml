@@ -1,0 +1,23 @@
+schema_version: "1.1"
+name: standards
+description: The standards lens reports a breach of the repo's CODING_STANDARDS.md at M or above, cites the rule, and grades no code smell above L.
+tags: [standards]
+context:
+  scaffold_script: fixture.sh
+execution:
+  model: claude-sonnet-5-5
+  max_turns: 40
+  timeout_seconds: 900
+  allowed_tools: [Read, Glob, Grep, Skill, Agent, Bash]
+  prompt: /daedalus-core:code-review --spec none
+graders:
+  - name: finding-at-seeded-line
+    type: regex
+    pattern: "\\*\\*[HM]\\d+ — [^\\n]*\\n- Location: `src/invoices\\.py:(?:\\d+-)?7\\b"
+  - name: found-by-standards-lens-with-rule
+    type: regex
+    pattern: "- Location: `src/invoices\\.py:(?:\\d+-)?7\\b[^\\n]*\\n- Lenses: [^\\n]*\\bstandards\\b(?:\\n- [^\\n]*)*?\\n- Rule: [^\\n]*CODING_STANDARDS\\.md"
+  - name: no-smell-above-low
+    type: regex
+    pattern: "\\*\\*[CHM]\\d+ — [^\\n]*(?:\\n- [^\\n]*)*?\\n- Rule: smell:"
+    match: not_contains

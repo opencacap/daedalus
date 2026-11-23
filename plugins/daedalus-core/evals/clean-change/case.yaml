@@ -1,6 +1,6 @@
 schema_version: "1.1"
 name: clean-change
-description: A correct change produces no blocking finding.
+description: A correct change produces no blocking finding, and the summary names each skipped lens with its reason.
 tags: [correctness, precision]
 context:
   scaffold_script: fixture.sh
@@ -9,11 +9,18 @@ execution:
   max_turns: 40
   timeout_seconds: 900
   allowed_tools: [Read, Glob, Grep, Skill, Agent, Bash]
-  prompt: /daedalus-core:code-review
+  prompt: /daedalus-core:code-review --spec none
 graders:
   - name: not-blocking
     type: regex
     pattern: "\\*\\*Verdict: NOT BLOCKING\\*\\*"
   - name: skipped-lenses-with-reasons
     type: regex
-    pattern: "Lenses skipped: [^\\n]*security[^\\n]*\\(not available in this version\\)"
+    pattern: "Lenses skipped: (?=[^\\n]*\\bspec \\(no spec available\\))(?=[^\\n]*\\btests \\(no test suite\\))(?=[^\\n]*\\btypes \\(no type definitions changed\\))(?=[^\\n]*\\bstack \\(no matching stack plugin installed\\))"
+  - name: every-lens-available
+    type: regex
+    pattern: "not available in this version"
+    match: not_contains
+  - name: no-spec-available
+    type: regex
+    pattern: "### Spec coverage\\s+No spec available\\."

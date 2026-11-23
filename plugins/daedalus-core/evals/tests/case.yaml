@@ -1,0 +1,19 @@
+schema_version: "1.1"
+name: tests
+description: In a repo with a test suite, the tests lens reports a new test that cannot fail, at M or above.
+tags: [tests]
+context:
+  scaffold_script: fixture.sh
+execution:
+  model: claude-sonnet-5-5
+  max_turns: 40
+  timeout_seconds: 900
+  allowed_tools: [Read, Glob, Grep, Skill, Agent, Bash]
+  prompt: /daedalus-core:code-review --spec none
+graders:
+  - name: finding-at-seeded-line
+    type: regex
+    pattern: "\\*\\*[CHM]\\d+ — [^\\n]*\\n- Location: `tests/test_stats\\.py:(?:\\d+-)?(?:8|9|10)\\b"
+  - name: found-by-tests-lens
+    type: regex
+    pattern: "- Location: `tests/test_stats\\.py:(?:\\d+-)?(?:8|9|10)\\b[^\\n]*\\n- Lenses: [^\\n]*\\btests\\b"

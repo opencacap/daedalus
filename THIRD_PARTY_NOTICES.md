@@ -16,6 +16,8 @@ Parts of this repository are adapted from the projects below. Each is distribute
 | `plugins/daedalus-react/skills/react-performance/SKILL.md` | everything-claude-code, `skills/react-performance/SKILL.md` (references to absent agents, rules, and commands removed), itself adapted from Vercel Labs [agent-skills](https://github.com/vercel-labs/agent-skills) `react-best-practices` (MIT) | Copyright (c) 2026 Affaan Mustafa |
 | `plugins/daedalus-react/agents/react-build-resolver.md` | everything-claude-code, `agents/react-build-resolver.md` (references updated) | Copyright (c) 2026 Affaan Mustafa |
 | `plugins/daedalus-core/rules/engineering.md`, sections 1–3 | [andrej-karpathy-skills](https://github.com/forrestchang/andrej-karpathy-skills), `skills/karpathy-guidelines/SKILL.md` (rewritten) | Copyright (c) forrestchang |
+| `plugins/daedalus-core/skills/code-review/references/lenses/{standards,spec}.md` | [mattpocock-skills](https://github.com/mattpocock/skills) 1.3.1, `skills/engineering/code-review/SKILL.md` (Standards and Spec briefs and the smell baseline reworded into defect-only finder briefs with rule citations, a coverage table, and severity guidance) | Copyright (c) 2026 Matt Pocock |
+| `plugins/daedalus-core/skills/code-review/references/lenses/{security,error-handling,tests,types,comments}.md` | everything-claude-code, `agents/{security-reviewer,silent-failure-hunter,pr-test-analyzer,type-design-analyzer,comment-analyzer}.md` (rewritten as defect-only finder briefs with severity guidance; the security false-positive list extended into an exclusion list) | Copyright (c) 2026 Affaan Mustafa |
 | `plugins/daedalus-core/skills/code-review/references/{suppression.md,lenses/correctness.md}` | [claude-plugins-official](https://github.com/anthropics/claude-plugins-official/tree/73c8cf3ea7e296057b467990f2f5d61b4c922260), `plugins/code-review/commands/code-review.md`, Apache-2.0 (false-positive list and bug criteria reworded, grouped, extended, and split into two read strategies; each file notes its changes) | Copyright (c) Anthropic |
 | `plugins/daedalus-writing/skills/vietnamizer/` | [finolabs/vietnamizer](https://github.com/finolabs/vietnamizer/tree/78ed5f7f0b40601ddbfb6a901203b79c45c9df11) | Copyright (c) 2026 Fioenix |
 | `plugins/daedalus-writing/skills/clarity/` | [addyosmani/clarity](https://github.com/addyosmani/clarity/tree/e27ceeff60368cf6966b4ea00a5b9b36418ee9a0) | Copyright (c) 2026 Addy Osmani |
@@ -24,7 +26,7 @@ Parts of this repository are adapted from the projects below. Each is distribute
 
 The writing skills include their upstream licenses. `slop-nuki` adapts [stop-slop](https://github.com/hardikpandya/stop-slop) (MIT, Copyright (c) 2025 Hardik Pandya).
 
-`daedalus-core` depends on [mattpocock-skills](https://github.com/mattpocock/skills) (MIT, Copyright (c) 2026 Matt Pocock), which is installed from its own marketplace and is not redistributed here.
+`daedalus-core` depends on [mattpocock-skills](https://github.com/mattpocock/skills) (MIT, Copyright (c) 2026 Matt Pocock), which is installed from its own marketplace and is not redistributed here, apart from the adapted text listed above.
 
 The marketplace also lists [caveman](https://github.com/JuliusBrussee/caveman) (Apache-2.0 since 3.0.0, Copyright 2026 Julius Brussee) and [ponytail](https://github.com/DietrichGebert/ponytail) (MIT, Copyright (c) 2026 DietrichGebert) by pinned commit. Both are fetched from their upstream repositories at install time and are not redistributed here.
 

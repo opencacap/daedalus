@@ -1,0 +1,22 @@
+schema_version: "1.1"
+name: security
+description: The security lens reports SQL built from request input as a blocking C or H finding at its line.
+tags: [security]
+context:
+  scaffold_script: fixture.sh
+execution:
+  model: claude-sonnet-5-5
+  max_turns: 40
+  timeout_seconds: 900
+  allowed_tools: [Read, Glob, Grep, Skill, Agent, Bash]
+  prompt: /daedalus-core:code-review --spec none
+graders:
+  - name: finding-at-seeded-line
+    type: regex
+    pattern: "\\*\\*[CH]\\d+ — [^\\n]*\\n- Location: `src/users\\.py:(?:\\d+-)?7\\b"
+  - name: found-by-security-lens
+    type: regex
+    pattern: "- Location: `src/users\\.py:(?:\\d+-)?7\\b[^\\n]*\\n- Lenses: [^\\n]*\\bsecurity\\b"
+  - name: blocking
+    type: regex
+    pattern: "\\*\\*Verdict: BLOCKING\\*\\*"

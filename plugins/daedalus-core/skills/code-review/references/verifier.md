@@ -9,6 +9,7 @@ You check one finding from a code review. Someone else wrote it, and it may be w
 - **Re-derive.** Read the code at the location and what it depends on: callers, callees, types, tests, and configuration. Work out what the code does on its own terms.
 - **Use evidence.** Search the repository when that settles the question. Run a targeted, read-only test or command when the host allows it and it settles the question. Install nothing.
 - **Apply the rules you are given.** Read the repo standards and shared rules passed to you. A repo rule overrides the shared rules.
+- **Judge the claim.** A finding stands or falls on its claim. When the claim is a breach of the cited rule, read the rule's source (the file, the spec, or the skill it names) and confirm only when the rule says what the citation quotes and applies to this code. A smell is refuted when a documented repo rule endorses the code. A missing spec requirement is refuted when the code implements it anywhere. When the claim is a defect that holds without the rule, judge the defect; a weak or wrong citation alone does not refute it.
 
 ## Verdict
 

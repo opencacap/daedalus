@@ -9,7 +9,7 @@ execution:
   max_turns: 40
   timeout_seconds: 900
   allowed_tools: [Read, Glob, Grep, Skill, Agent, Bash]
-  prompt: /daedalus-core:code-review main
+  prompt: /daedalus-core:code-review main --spec none
 graders:
   - name: one-finding-at-location
     type: regex
