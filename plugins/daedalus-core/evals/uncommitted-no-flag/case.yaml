@@ -1,0 +1,24 @@
+schema_version: "1.1"
+name: uncommitted-no-flag
+description: Without --uncommitted, a defect that exists only in the working tree is out of scope, and the report says uncommitted changes were not reviewed.
+tags: [scope]
+context:
+  scaffold_script: fixture.sh
+execution:
+  model: claude-sonnet-5-5
+  max_turns: 40
+  timeout_seconds: 900
+  allowed_tools: [Read, Glob, Grep, Skill, Agent, Bash]
+  prompt: /daedalus-core:code-review
+graders:
+  - name: working-tree-defect-not-reported
+    type: regex
+    pattern: "src/stats\\.py:(?:\\d+-)?18\\b"
+    match: not_contains
+  - name: gap-reported
+    type: regex
+    pattern: "uncommitted changes not reviewed"
+    flags: i
+  - name: not-blocking
+    type: regex
+    pattern: "\\*\\*Verdict: NOT BLOCKING\\*\\*"

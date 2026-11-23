@@ -1,0 +1,23 @@
+schema_version: "1.1"
+name: pre-existing
+description: A defect that predates the diff is reported under Pre-existing and does not block.
+tags: [correctness, origin]
+context:
+  scaffold_script: fixture.sh
+execution:
+  model: claude-sonnet-5-5
+  max_turns: 40
+  timeout_seconds: 900
+  allowed_tools: [Read, Glob, Grep, Skill, Agent, Bash]
+  prompt: /daedalus-core:code-review
+graders:
+  - name: in-pre-existing-section
+    type: regex
+    pattern: "### Pre-existing[\\s\\S]*src/money\\.py:(?:\\d+-)?11\\b[\\s\\S]*### Summary"
+  - name: not-in-introduced-section
+    type: regex
+    pattern: "### Introduced by this diff[\\s\\S]*src/money\\.py:(?:\\d+-)?11\\b[\\s\\S]*### Needs a human"
+    match: not_contains
+  - name: not-blocking
+    type: regex
+    pattern: "\\*\\*Verdict: NOT BLOCKING\\*\\*"

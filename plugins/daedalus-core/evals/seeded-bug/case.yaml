@@ -1,0 +1,23 @@
+schema_version: "1.1"
+name: seeded-bug
+description: A correctness bug introduced by the diff is reported at its file and line as a blocking C or H finding.
+tags: [correctness]
+context:
+  scaffold_script: fixture.sh
+execution:
+  model: claude-sonnet-5-5
+  max_turns: 40
+  timeout_seconds: 900
+  allowed_tools: [Read, Glob, Grep, Skill, Agent, Bash]
+  prompt: /daedalus-core:code-review
+graders:
+  - name: finding-at-seeded-line
+    type: regex
+    pattern: "\\*\\*[CH]\\d+ — [^\\n]*\\n[^\\n]*src/stats\\.py:(?:\\d+-)?13\\b"
+  - name: blocking
+    type: regex
+    pattern: "\\*\\*Verdict: BLOCKING\\*\\*"
+  - name: finders-and-verifier-ran
+    type: tool_used
+    tool: Agent
+    min: 3

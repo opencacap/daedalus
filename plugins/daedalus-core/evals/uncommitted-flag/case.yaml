@@ -1,0 +1,19 @@
+schema_version: "1.1"
+name: uncommitted-flag
+description: With --uncommitted, a defect that exists only in the working tree is found and blocks.
+tags: [scope, correctness]
+context:
+  scaffold_script: fixture.sh
+execution:
+  model: claude-sonnet-5-5
+  max_turns: 40
+  timeout_seconds: 900
+  allowed_tools: [Read, Glob, Grep, Skill, Agent, Bash]
+  prompt: /daedalus-core:code-review --uncommitted
+graders:
+  - name: finding-at-seeded-line
+    type: regex
+    pattern: "\\*\\*[CH]\\d+ — [^\\n]*\\n[^\\n]*src/stats\\.py:(?:\\d+-)?18\\b"
+  - name: blocking
+    type: regex
+    pattern: "\\*\\*Verdict: BLOCKING\\*\\*"
