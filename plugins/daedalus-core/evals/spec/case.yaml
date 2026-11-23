@@ -16,10 +16,13 @@ graders:
     pattern: "\\*\\*[CH]\\d+ — [^\\n]*\\n- Location: `src/discounts\\.py:(?:\\d+-)?8\\b"
   - name: finding-quotes-requirement
     type: regex
-    pattern: "- Location: `src/discounts\\.py:(?:\\d+-)?8\\b[^\\n]*\\n- Lenses: [^\\n]*\\bspec\\b(?:\\n- [^\\n]*)*?\\n- Rule: [^\\n]*ValueError"
+    pattern: "- Location: `src/discounts\\.py:(?:\\d+-)?8\\b[^\\n]*\\n- Lenses: [^\\n]*\\bspec\\b[^\\n]*(?:\\n- [^\\n]*)*?\\n- Rule: [^\\n]*ValueError"
   - name: coverage-shows-missing-requirement
     type: regex
     pattern: "### Spec coverage[\\s\\S]*\\|[^\\n]*describe_discount[^\\n]*\\|\\s*missing\\s*\\|"
   - name: blocking
     type: regex
     pattern: "\\*\\*Verdict: BLOCKING\\*\\*"
+  - name: verified
+    type: regex
+    pattern: "- Location: `src/discounts\\.py:(?:\\d+-)?8\\b[^\\n]*(?:\\n- [^\\n]*)*?\\n- Verifier: CONFIRMED"

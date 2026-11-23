@@ -14,7 +14,7 @@ Each reported finding gets a tag: its severity letter and a number, for example 
 - Lenses: <lens ids, comma-separated>
 - Code: `<quoted code>`
 - Failure: <failure scenario>
-- Rule: <cited rule; omit this line when the finding has none>
+- Rule: <cited rules; omit this line when the finding has none>
 - Fix: <suggested fix>
 - Verifier: <CONFIRMED | UNCERTAIN> — <citation>
 ```
@@ -54,7 +54,7 @@ Spec: <SPEC SOURCE>
 
 | Requirement | Status | Evidence |
 | --- | --- | --- |
-| <requirement, quoted> | <done | partial | missing, plus "(unverified)" when its finding is uncertain> | <file:line, or the tag of its finding> |
+| <requirement, quoted> | <done | partial | missing, plus "(unverified)" when its finding is uncertain> | <file:line, the tag of its finding, or none> |
 ```
 
 When the spec lens ran but returned no coverage block, write `Spec: <SPEC SOURCE>` and `The spec lens returned no coverage table.`, and record that as a scope gap.

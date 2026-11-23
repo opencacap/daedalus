@@ -18,8 +18,10 @@ You are one finder in a code review. You apply one lens to one diff and return t
 
 ## Output
 
-If you found no defect, reply with exactly `NO ISSUES`.
+Reply with one of these, and nothing else:
 
-Otherwise reply with one `FINDING` block per defect, in the format of `finding-schema.md`, and nothing else.
+- One `FINDING` block per defect, in the format of `finding-schema.md`.
+- `NO ISSUES`, when you found no defect.
+- `NO RESULT: <reason>`, when you cannot apply your lens, for example because a rubric does not load.
 
-A lens brief may ask for one more block, such as the spec lens's `COVERAGE` block. Put it first, then the findings or `NO ISSUES`.
+A lens brief may ask for one more block, such as the spec lens's `COVERAGE` block. Put it first.

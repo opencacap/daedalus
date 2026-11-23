@@ -20,3 +20,6 @@ graders:
   - name: blocking
     type: regex
     pattern: "\\*\\*Verdict: BLOCKING\\*\\*"
+  - name: verified
+    type: regex
+    pattern: "- Location: `src/grid\\.py:(?:\\d+-)?(?:5|6)\\b[^\\n]*(?:\\n- [^\\n]*)*?\\n- Verifier: CONFIRMED"

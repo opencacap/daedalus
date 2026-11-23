@@ -1,6 +1,6 @@
 schema_version: "1.1"
 name: tests
-description: In a repo with a test suite, the tests lens reports a new test that cannot fail, at M or above.
+description: In a repo with a test suite, the tests lens reports a new test that cannot fail, at M, without blocking.
 tags: [tests]
 context:
   scaffold_script: fixture.sh
@@ -13,7 +13,13 @@ execution:
 graders:
   - name: finding-at-seeded-line
     type: regex
-    pattern: "\\*\\*[CHM]\\d+ — [^\\n]*\\n- Location: `tests/test_stats\\.py:(?:\\d+-)?(?:8|9|10)\\b"
+    pattern: "\\*\\*M\\d+ — [^\\n]*\\n- Location: `tests/test_stats\\.py:(?:\\d+-)?(?:8|9|10)\\b"
   - name: found-by-tests-lens
     type: regex
     pattern: "- Location: `tests/test_stats\\.py:(?:\\d+-)?(?:8|9|10)\\b[^\\n]*\\n- Lenses: [^\\n]*\\btests\\b"
+  - name: verified
+    type: regex
+    pattern: "- Location: `tests/test_stats\\.py:(?:\\d+-)?(?:8|9|10)\\b[^\\n]*(?:\\n- [^\\n]*)*?\\n- Verifier: CONFIRMED"
+  - name: not-blocking
+    type: regex
+    pattern: "\\*\\*Verdict: NOT BLOCKING\\*\\*"

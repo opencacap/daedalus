@@ -13,12 +13,12 @@ title: <what is wrong, under 80 characters>
 code: <the code at that location, quoted exactly>
 claim: <what is wrong and why, in one or two sentences>
 failure: <a concrete failure: the input or state, then the wrong result>
-rule: <the rule and its source, see below; otherwise none>
+rule: <the rule and its source, see below; several rules separated by "; "; otherwise none>
 fix: <the suggested fix, in one or two sentences or one short code line>
 END
 ```
 
-The `rule` field is required for the `standards`, `spec`, and `stack` lenses; the orchestrator drops their findings without one. Cite a documented rule as `<source> — "<the rule, quoted>"`, a spec requirement as `<spec source> — "<the requirement, quoted>"`, and a code smell as `smell: <name> (smell baseline)`. A finding whose rule is a smell is graded L.
+The `rule` field is required for the `standards`, `spec`, and `stack` lenses; the orchestrator drops their findings without one. Cite a documented rule as `<source> — "<the rule, quoted>"`, where the source is a file path or a skill name such as `daedalus-python:python-patterns`; a spec requirement as `<spec source> — "<the requirement, quoted>"`; and a code smell as `smell: <name> (smell baseline)`.
 
 The orchestrator adds the rest:
 

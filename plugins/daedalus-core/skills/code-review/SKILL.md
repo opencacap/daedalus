@@ -1,6 +1,6 @@
 ---
 name: code-review
-description: Find-then-verify review of a branch's changes. Independent read-only sub-agents look for defects through correctness, security, error-handling, standards, spec, tests, types, comments, and stack lenses; a fresh sub-agent re-derives each finding from the code; and the report ranks confirmed findings C/H/M/L with a blocking verdict and a spec coverage table. Use when asked to review a branch, a diff, or work in progress, or before merging.
+description: Find-then-verify review of a branch's changes. Independent read-only sub-agents look for defects, a fresh sub-agent re-derives each finding from the code, and the report ranks confirmed findings C/H/M/L with a blocking verdict. Use when asked to review a branch, a diff, or work in progress, or before merging.
 argument-hint: "[base-ref] [--uncommitted] [--spec <path | issue | none>]"
 ---
 
@@ -53,7 +53,7 @@ Call this list `STANDARDS`. Sub-agents get the paths, not the contents, and so d
 Find the spec in this order and stop at the first source that gives one:
 
 1. **Argument.** `--spec none` means there is no spec. A path: use that file; if it does not exist, ask as in source 4. An issue reference: read it as in source 2.
-2. **Commit messages.** Run `git log --format=%B <merge-base>..HEAD` and collect issue references (`#12`, `Closes #12`, GitLab `!12`, tracker keys such as `ABC-123`). Find the repo's issue tracker doc: the root `AGENTS.md` or `CLAUDE.md` points to it. Read each referenced issue the way that doc says. Without a tracker doc, skip this source.
+2. **Commit messages.** Run `git log --format=%B <merge-base>..HEAD` and collect issue and merge request references (`#12`, `Closes #12`, GitLab `!12`, tracker keys such as `ABC-123`). Find the repo's issue tracker doc: the root `AGENTS.md` or `CLAUDE.md` points to it. Read each referenced issue the way that doc says. Without a tracker doc, skip this source.
 3. **Spec file.** Search `docs/`, `specs/`, `spec/`, and `.scratch/` for a Markdown file whose path matches the branch name (`git branch --show-current`, without a prefix such as `feat/`) or the feature the commit messages name.
 4. **Ask.** Ask the developer exactly `Where is the spec for this change? Reply with a file path or an issue reference, or "none" if there is no spec.` Use your question tool if you have one; otherwise make the question your whole reply and wait for the answer. Start no sub-agent before the answer.
 
@@ -61,24 +61,24 @@ If the developer answers `none`, there is no spec. Record `SPEC`: the spec's pat
 
 ### Stack
 
-From the skills available in this session, take those of an installed `daedalus-*` plugin other than `daedalus-core` and `daedalus-writing` whose name ends in `-patterns` or `-coding-standards`. Keep the ones whose description matches a language or framework of the changed files. Record their full names (`<plugin>:<skill>`) as `STACK`, or `none`.
+Read the list of skills available in this session, which your host gives you; do not search the file system for skills. From it, take those of an installed `daedalus-*` plugin other than `daedalus-core` and `daedalus-writing` whose name ends in `-patterns` or `-coding-standards`. Keep the ones whose description matches a language or framework of the changed files. Record their full names (`<plugin>:<skill>`) as `STACK`, or `none`.
 
 ### Lens conditions
 
-`RANGE` is `<merge-base> HEAD`, or `<merge-base>` with `--uncommitted`. Run each check with git, one command per call. With `--uncommitted`, also check the untracked files under review, using your file search tool with the same pattern.
+`RANGE` is `<merge-base> HEAD`, or `<merge-base>` with `--uncommitted`. Run each check with git, one command per call, exactly as written: hosts that allow only `git` refuse a command that contains `$` or a backtick, so the patterns avoid both. With `--uncommitted`, also check the untracked files under review, using your file search tool with the same pattern.
 
 - **Code changed:** at least one changed file is source code, not only documentation, prose, data, or images.
-- **Test suite:** `git ls-files -- ':(glob)**/test_*' ':(glob)**/*_test.*' ':(glob)**/*.test.*' ':(glob)**/*.spec.*' ':(glob)**/*Test.*' ':(glob)**/*Tests.*' ':(glob)**/__tests__/**'` lists at least one file.
-- **Type definitions:** this command lists at least one file. It matches added or removed lines that declare a type or a typed field.
+- **Test suite:** `git ls-files -- ':(glob)**/test_*' ':(glob)**/*_test.*' ':(glob)**/*.test.*' ':(glob)**/*.spec.*' ':(glob)**/*_spec.*' ':(glob)**/*Test.*' ':(glob)**/*Tests.*' ':(glob)**/*Spec.*' ':(glob)**/__tests__/**' ':(glob)**/tests/**' ':(glob)**/test/**' ':(glob)**/spec/**'` lists at least one file.
+- **Type definitions:** this command lists at least one file. It matches added or removed lines that declare a type, a typed field, a member with an access modifier, an enum member, or a Go struct field. It is a cheap filter, so it also matches some lines that are not type definitions.
 
   ```text
-  git diff --name-only -G '^[[:space:]]*((export|public|private|protected|internal|abstract|sealed|final|static|data|declare|default|pub)[[:space:]]+)*(class|interface|type|struct|enum|record|trait|protocol|typedef|union)[[:space:]]+[[:alpha:]_]|^[[:space:]]+(readonly[[:space:]]+)?[[:alpha:]_][[:alnum:]_]*[?]?:[[:space:]]*[[:alpha:]_]' <RANGE> -- . ':(exclude)*.md' ':(exclude)*.mdx' ':(exclude)*.rst' ':(exclude)*.txt' ':(exclude)*.yml' ':(exclude)*.yaml'
+  git diff --name-only -G '^[[:space:]]*((export|public|private|protected|internal|abstract|sealed|final|static|data|declare|default|pub)[[:space:]]+)*(class|interface|type|struct|enum|record|trait|protocol|typedef|union)[[:space:]]+[[:alpha:]_]|^[[:space:]]+(readonly[[:space:]]+)?[[:alpha:]_][[:alnum:]_]*[?]?:[[:space:]]*[[:alpha:]_]|^[[:space:]]+((public|private|protected|internal|readonly|override)[[:space:]]+)+[[:alpha:]_]|^[[:space:]]+[[:upper:]][[:alnum:]_]*[[:space:]]*(,|;|[(]|=[[:space:]]*[^[:space:][:alpha:]_])|^[[:space:]]+[[:upper:]][[:alnum:]_]*[[:space:]]+[][*]*[[:alpha:]][[:alnum:]_.]*' <RANGE> -- . ':(exclude)*.md' ':(exclude)*.mdx' ':(exclude)*.rst' ':(exclude)*.txt' ':(exclude)*.yml' ':(exclude)*.yaml'
   ```
 
 - **Comments:** this command lists at least one file. It matches added or removed lines with a comment marker or a docstring quote.
 
   ```text
-  git diff --name-only -G '(^|[[:space:]])(#|//|/[*]|--[[:space:]])|^[[:space:]]*[*]|["]{3}' <RANGE> -- . ':(exclude)*.md' ':(exclude)*.mdx' ':(exclude)*.rst' ':(exclude)*.txt'
+  git diff --name-only -G '(^|[[:space:]])(#|//|--[[:space:]])|/[*]|<!--|^[[:space:]]*[*]|["]{3}' <RANGE> -- . ':(exclude)*.md' ':(exclude)*.mdx' ':(exclude)*.rst' ':(exclude)*.txt'
   ```
 
 ## 4. Find
@@ -119,13 +119,13 @@ Shared rules: every file in RULES.
 <lens input, omitted when none>
 ```
 
-A finder that fails or returns neither findings nor `NO ISSUES` is a scope gap: record `<lens id> returned no result`.
+A finder that fails, replies `NO RESULT: <reason>`, or returns neither findings nor `NO ISSUES` is a scope gap: record `<lens id> returned no result`, with the reason when it gave one.
 
 Sub-agents may run in the background. Wait for every result to arrive; never run `sleep` or any other command to wait, and start no background command.
 
 ## 5. Normalize
 
-1. Keep the spec lens's `COVERAGE` block for the report. Parse every `FINDING` block. Drop a block that lacks `file`, `line`, `claim`, or `failure`, or a `standards`, `spec`, or `stack` block whose `rule` is `none`, and record the scope gap `<lens id> returned a malformed finding`.
+1. Keep the spec lens's `COVERAGE` block for the report. Parse every `FINDING` block. Drop a block that lacks `file`, `line`, `claim`, or `failure`, or whose lens requires a `rule` (see `REFS/finding-schema.md`) and gives `none`, and record the scope gap `<lens id> returned a malformed finding`.
 2. Set the severity of every finding whose `rule` starts with `smell:` to L.
 3. Drop findings in a category that `REFS/suppression.md` marks for the orchestrator to drop, and count them as suppressed. Leave every other finding to the verifier.
 4. Merge duplicates: same file, overlapping or adjacent lines, and the same root cause. The merged finding keeps the highest severity, lists every lens that reported it, keeps every cited rule, and keeps the clearest title, claim, failure, and fix.
@@ -160,7 +160,7 @@ Apply each verdict:
 - `UNCERTAIN` at M or L: drop it and count it.
 - No verdict line, or the verifier failed: treat it as `UNCERTAIN`.
 
-Then update the coverage rows: a `partial` or `missing` row whose finding (the one that quotes the same requirement) was refuted becomes `done`; one whose finding is uncertain keeps its status and gets `(unverified)`.
+Then update each `partial` or `missing` coverage row from its finding, the one that quotes the same requirement: a reported finding puts its tag in the row's evidence; a refuted one turns the row to `done`, with the verifier's citation as evidence; an uncertain one that was dropped keeps the status, adds `(unverified)`, and keeps the evidence `none`.
 
 ## 7. Report
 

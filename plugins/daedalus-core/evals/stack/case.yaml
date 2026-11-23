@@ -18,7 +18,10 @@ graders:
     pattern: "\\*\\*[CH]\\d+ — [^\\n]*\\n- Location: `src/tags\\.py:(?:\\d+-)?4\\b"
   - name: found-by-stack-lens-with-rule
     type: regex
-    pattern: "- Location: `src/tags\\.py:(?:\\d+-)?4\\b[^\\n]*\\n- Lenses: [^\\n]*\\bstack\\b(?:\\n- [^\\n]*)*?\\n- Rule: [^\\n]*python-patterns"
+    pattern: "- Location: `src/tags\\.py:(?:\\d+-)?4\\b[^\\n]*\\n- Lenses: [^\\n]*\\bstack\\b[^\\n]*(?:\\n- [^\\n]*)*?\\n- Rule: [^\\n]*python-patterns"
   - name: blocking
     type: regex
     pattern: "\\*\\*Verdict: BLOCKING\\*\\*"
+  - name: verified
+    type: regex
+    pattern: "- Location: `src/tags\\.py:(?:\\d+-)?4\\b[^\\n]*(?:\\n- [^\\n]*)*?\\n- Verifier: CONFIRMED"

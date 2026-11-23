@@ -25,12 +25,12 @@ Then check each requirement against the diff and the code it changes. Read the c
 - A requirement implemented wrongly: wrong value, wrong condition, wrong error, wrong place.
 - Behavior the spec explicitly excludes or puts out of scope, added anyway.
 
-Every finding quotes the requirement in its `rule` field: `<spec source> — "<requirement>"`. For a missing requirement, point `file` and `line` at the code where the requirement belongs, such as the function or module the spec names; if there is none, use the spec file and the requirement's line.
+Every finding quotes the requirement in its `rule` field: `<spec source> — "<requirement>"`, and its origin is `introduced`. For a missing requirement, point `file` and `line` at the code where the requirement belongs, such as the function or module the spec names; if there is none, use the spec file and the requirement's line.
 
 ## Severity
 
-- **H:** a requirement missing or implemented wrongly, or a part missing that a normal path needs.
-- **M:** a part missing that only an edge case needs, or excluded behavior added.
+- **H:** a requirement implemented wrongly, or implemented in part so that a normal path behaves wrongly.
+- **M:** a requirement missing, a part missing that only an edge case needs, or excluded behavior added. A change may cover only part of a spec on purpose; the coverage table shows what is missing.
 - **C:** a requirement implemented wrongly in a way that also meets the C grade in `severity.md`.
 
 ## Output

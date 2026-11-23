@@ -1,6 +1,6 @@
 schema_version: "1.1"
 name: standards
-description: The standards lens reports a breach of the repo's CODING_STANDARDS.md at M or above, cites the rule, and grades no code smell above L.
+description: The standards lens reports a breach of the repo's CODING_STANDARDS.md at M, cites the rule, reports the Middle Man smell at L, and grades no smell above L.
 tags: [standards]
 context:
   scaffold_script: fixture.sh
@@ -13,11 +13,20 @@ execution:
 graders:
   - name: finding-at-seeded-line
     type: regex
-    pattern: "\\*\\*[HM]\\d+ — [^\\n]*\\n- Location: `src/invoices\\.py:(?:\\d+-)?7\\b"
+    pattern: "\\*\\*M\\d+ — [^\\n]*\\n- Location: `src/invoices\\.py:(?:\\d+-)?7\\b"
   - name: found-by-standards-lens-with-rule
     type: regex
-    pattern: "- Location: `src/invoices\\.py:(?:\\d+-)?7\\b[^\\n]*\\n- Lenses: [^\\n]*\\bstandards\\b(?:\\n- [^\\n]*)*?\\n- Rule: [^\\n]*CODING_STANDARDS\\.md"
+    pattern: "- Location: `src/invoices\\.py:(?:\\d+-)?7\\b[^\\n]*\\n- Lenses: [^\\n]*\\bstandards\\b[^\\n]*(?:\\n- [^\\n]*)*?\\n- Rule: [^\\n]*CODING_STANDARDS\\.md"
   - name: no-smell-above-low
     type: regex
     pattern: "\\*\\*[CHM]\\d+ — [^\\n]*(?:\\n- [^\\n]*)*?\\n- Rule: smell:"
     match: not_contains
+  - name: verified
+    type: regex
+    pattern: "- Location: `src/invoices\\.py:(?:\\d+-)?7\\b[^\\n]*(?:\\n- [^\\n]*)*?\\n- Verifier: CONFIRMED"
+  - name: not-blocking
+    type: regex
+    pattern: "\\*\\*Verdict: NOT BLOCKING\\*\\*"
+  - name: smell-reported-at-low
+    type: regex
+    pattern: "\\*\\*L\\d+ — [^\\n]*\\n- Location: `src/invoices\\.py:(?:\\d+-)?(?:10|11|12)\\b[^\\n]*(?:\\n- [^\\n]*)*?\\n- Rule: smell:"

@@ -1,6 +1,6 @@
 schema_version: "1.1"
 name: comments
-description: The comments lens reports a docstring that promises a KeyError the code never raises, at M or above.
+description: The comments lens reports a docstring that promises a KeyError the code never raises, at M, without blocking.
 tags: [comments]
 context:
   scaffold_script: fixture.sh
@@ -13,7 +13,13 @@ execution:
 graders:
   - name: finding-at-docstring
     type: regex
-    pattern: "\\*\\*[CHM]\\d+ — [^\\n]*\\n- Location: `src/directory\\.py:(?:\\d+-)?(?:4|5)\\b"
+    pattern: "\\*\\*M\\d+ — [^\\n]*\\n- Location: `src/directory\\.py:(?:\\d+-)?(?:4|5)\\b"
   - name: found-by-comments-lens
     type: regex
     pattern: "- Location: `src/directory\\.py:(?:\\d+-)?(?:4|5)\\b[^\\n]*\\n- Lenses: [^\\n]*\\bcomments\\b"
+  - name: verified
+    type: regex
+    pattern: "- Location: `src/directory\\.py:(?:\\d+-)?(?:4|5)\\b[^\\n]*(?:\\n- [^\\n]*)*?\\n- Verifier: CONFIRMED"
+  - name: not-blocking
+    type: regex
+    pattern: "\\*\\*Verdict: NOT BLOCKING\\*\\*"

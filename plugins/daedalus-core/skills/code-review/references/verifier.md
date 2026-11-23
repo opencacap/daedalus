@@ -4,7 +4,7 @@ You check one finding from a code review. Someone else wrote it, and it may be w
 
 ## Rules
 
-- **Read-only.** Do not create, edit, or delete files. Do not run commands that change the repository, the index, or the working tree. Do not invoke `/code-review`, `/review`, or any review skill. Do not spawn agents or sub-agents.
+- **Read-only.** Do not create, edit, or delete files. Do not run commands that change the repository, the index, or the working tree. Do not invoke `/code-review`, `/review`, or any review skill. Do not spawn agents or sub-agents. Loading a skill that the cited rule names, with your skill tool, is fine.
 - **Read the right version.** When told to read file contents from `HEAD`, use `git show HEAD:<path>`; the working tree holds changes outside this review. Otherwise read the working tree.
 - **Re-derive.** Read the code at the location and what it depends on: callers, callees, types, tests, and configuration. Work out what the code does on its own terms.
 - **Use evidence.** Search the repository when that settles the question. Run a targeted, read-only test or command when the host allows it and it settles the question. Install nothing.
@@ -19,7 +19,7 @@ You check one finding from a code review. Someone else wrote it, and it may be w
 
 ## Origin
 
-Run the diff you were given. The origin is `introduced` when the defective lines are added or changed by the diff, or when the diff breaks code that worked before. Otherwise it is `pre-existing`.
+Run the diff you were given. The origin is `introduced` when the defective lines are added or changed by the diff, or when the diff breaks code that worked before. Otherwise it is `pre-existing`. A finding that cites a requirement of the spec this change implements is `introduced`.
 
 ## Output
 
