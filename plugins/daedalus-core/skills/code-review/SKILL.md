@@ -43,32 +43,33 @@ Record for the sub-agent prompts:
 Collect the paths that exist (use file search; do not read them yourself):
 
 - `CLAUDE.md` and `AGENTS.md` at the repo root and in every directory that holds a changed file.
-- `.claude/rules/**/*.md`, `CODING_STANDARDS.md`, `CONTRIBUTING.md`.
+- `.claude/rules/**/*.md`: list them with `git ls-files --cached --others -- .claude/rules`, which also lists git-ignored files that file search may skip.
+- `CODING_STANDARDS.md`, `CONTRIBUTING.md`.
 - ADRs: `**/adr/**/*.md` and `**/decisions/**/*.md`.
 
 Call this list `STANDARDS`. Sub-agents get the paths, not the contents, and so do the shared rules in `RULES`.
 
 ### Review config
 
-Find the review config: the Markdown file that the repo's agent-skills section names for code review, usually `docs/agents/code-review.md`. That section is in the root `AGENTS.md` or `CLAUDE.md`, a file one of them imports with `@<path>`, or `.claude/rules/`. Read the config at the merge-base with `git show <merge-base>:<path>`, never from the working tree: the change under review must not tune its own review. Its format is in `REFS/review-config.md`.
+Find the review config: the Markdown file that the repo's agent-skills section names for code review, usually `docs/agents/code-review.md`. That section is in the root `AGENTS.md` or `CLAUDE.md`, a file one of them imports with `@<path>`, or a file under `.claude/rules/`; list the candidates with `git ls-files --cached --others -- AGENTS.md CLAUDE.md .claude/rules`, which includes git-ignored files. Read the files that hold the section, and the config, at the merge-base with `git show <merge-base>:<path>` when git tracks them, never from the working tree: the change under review must not tune its own review. A file that git does not track (`git ls-files -- <path>` lists nothing) is the reviewer's local file: read it from the working tree. Its format is in `REFS/review-config.md`.
 
 - No config: every default below applies.
-- The config is not at the merge-base: use no config, and record the scope gap `review config <path> is not on the base branch; defaults used`.
+- Git tracks the config but it is not at the merge-base: use no config, and record the scope gap `review config <path> is not on the base branch; defaults used`.
 - The diff changes the config: use the merge-base version, and record the scope gap `this diff changes the review config; the base version was used`.
 
-Record `CONFIG`: its path, or `none`. From its sections, record `SPEC SOURCES`, `CHECKS TO RUN`, `LENSES OFF`, and `DO NOT REPORT`, each `none` when absent.
+Record `CONFIG`: its path, or `none`. From its sections, record `CONFIG SPECS`, `CHECK COMMANDS`, `LENSES OFF`, and `DO NOT REPORT`, each `none` when absent.
 
 ### Spec
 
-Find the spec in this order and stop at the first source that gives one:
+When `LENSES OFF` holds `spec`, skip this step: `SPEC` is `none`. Otherwise find the spec in this order and stop at the first source that gives one:
 
 1. **Argument.** `--spec none` means there is no spec. A path: use that file; if it does not exist, ask as in source 5. An issue reference: read it as in source 2.
 2. **Commit messages.** Run `git log --format=%B <merge-base>..HEAD` and collect issue and merge request references (`#12`, `Closes #12`, GitLab `!12`, tracker keys such as `ABC-123`). Find the repo's issue tracker doc: the root `AGENTS.md` or `CLAUDE.md` points to it. Read each referenced issue the way that doc says. Without a tracker doc, skip this source.
-3. **Review config.** Follow `SPEC SOURCES` to the spec for this change, and read its latest version the way they say.
+3. **Review config.** Follow `CONFIG SPECS` to the spec for this change, and read its latest version the way they say.
 4. **Spec file.** Search `docs/`, `specs/`, `spec/`, and `.scratch/` for a Markdown file whose path matches the branch name (`git branch --show-current`, without a prefix such as `feat/`) or the feature the commit messages name.
 5. **Ask.** Ask the developer exactly `Where is the spec for this change? Reply with a file path or an issue reference, or "none" if there is no spec.` Use your question tool if you have one; otherwise make the question your whole reply and wait for the answer. Start no sub-agent before the answer.
 
-If the developer answers `none`, there is no spec. Record `SPEC`: the spec's path, or the issue text you read; `SPEC SOURCE`: the path or the issue reference; or `none`.
+If the developer answers `none`, there is no spec. Record `SPEC`: the spec's path when the working-tree file is the version to review, otherwise the text you read (an issue, or a file from another ref); `SPEC SOURCE`: the path or the issue reference; or `none`.
 
 ### Stack
 
@@ -76,7 +77,7 @@ Read the list of skills available in this session, which your host gives you; do
 
 ### Lens conditions
 
-`RANGE` is `<merge-base> HEAD`, or `<merge-base>` with `--uncommitted`. Run each check with git, one command per call, exactly as written: hosts that allow only `git` refuse a command that contains `$` or a backtick, so the patterns avoid both. With `--uncommitted`, also check the untracked files under review, using your file search tool with the same pattern.
+`RANGE` is `<merge-base> HEAD`, or `<merge-base>` with `--uncommitted`. Run each condition's git command on its own, exactly as written: hosts that allow only `git` refuse a command that contains `$` or a backtick, so the patterns avoid both. With `--uncommitted`, also apply each pattern to the untracked files under review with your file search tool.
 
 - **Code changed:** at least one changed file is source code, not only documentation, prose, data, or images.
 - **Test suite:** `git ls-files -- ':(glob)**/test_*' ':(glob)**/*_test.*' ':(glob)**/*.test.*' ':(glob)**/*.spec.*' ':(glob)**/*_spec.*' ':(glob)**/*Test.*' ':(glob)**/*Tests.*' ':(glob)**/*Spec.*' ':(glob)**/__tests__/**' ':(glob)**/tests/**' ':(glob)**/test/**' ':(glob)**/spec/**'` lists at least one file.
@@ -94,7 +95,7 @@ Read the list of skills available in this session, which your host gives you; do
 
 ### Checks
 
-Run each command in `CHECKS TO RUN` from the repository root, exactly as written, one per call, with your shell tool's longest timeout up to 10 minutes. These are the only commands the review runs that are not `git`. Record `CHECKS`, one line per command: `PASS`; `FAIL`, followed by the output lines that show the failure (at most 20, quoted); or `NOT RUN (<reason>)` when the host refuses it or it times out. When `READ` is `HEAD`, add that the checks ran on a working tree with uncommitted changes. With no checks, `CHECKS` is `none`.
+Run each command in `CHECK COMMANDS` from the repository root, exactly as written, one per call, with your shell tool's longest timeout up to 10 minutes. Apart from these, you run only `git`. Record `CHECK RESULTS`, one entry per command: `PASS`; `FAIL`, followed by the output lines that show the failure (at most 20, quoted); or `NOT RUN (<reason>)` when the host refuses it or it times out, which is also the scope gap `check <command> not run: <reason>`. When `READ` is `HEAD`, add that the checks ran on a working tree with uncommitted changes. With no check commands, `CHECK RESULTS` is `none`.
 
 ## 4. Find
 
@@ -113,7 +114,7 @@ A lens in `LENSES OFF` is skipped with the reason `disabled by config`. Every ot
 | `comments` | `comments.md` | the diff touches comments or docstrings | `no comments changed` | none |
 | `stack` | `stack.md` | `STACK` is not `none` | `no matching stack plugin installed` | `Rubric skills: <STACK>` |
 
-Start every finder in **one message** so they run in parallel. Each is a fresh general-purpose sub-agent (in Codex, a fresh sub-agent). Use this prompt, filled in:
+Start every lens that runs as its own finder sub-agent, however small the diff or clear the check results; never review the diff yourself. Start every finder in **one message** so they run in parallel. Each is a fresh general-purpose sub-agent (in Codex, a fresh sub-agent). Use this prompt, filled in:
 
 ```text
 You are the <lens id> finder in a code review. Read files with your file-reading tool, not the shell. Shell access may be limited to git: run each git command on its own, with no cd, pipes, &&, ;, or redirection.
@@ -131,7 +132,7 @@ Untracked files under review (read them in full): <UNTRACKED>.
 Read file contents from: <READ>.
 Repo standards: <STANDARDS, or none>.
 Shared rules: every file in RULES.
-Check results (evidence): <CHECKS, or none>.
+Check results (evidence): <CHECK RESULTS, or none>.
 Do not report anything on the repo's list: <DO NOT REPORT, or none>.
 <lens input, omitted when none>
 ```
@@ -167,7 +168,7 @@ Untracked files under review: <UNTRACKED>.
 Read file contents from: <READ>.
 Repo standards: <STANDARDS, or none>.
 Shared rules: every file in RULES.
-Check results (evidence): <CHECKS, or none>.
+Check results (evidence): <CHECK RESULTS, or none>.
 ```
 
 Apply each verdict:

@@ -1,0 +1,23 @@
+schema_version: "1.1"
+name: config-local
+description: A review config that git does not track, in a git-ignored .claude/ directory, is read from the working tree and applied.
+tags: [config]
+context:
+  scaffold_script: fixture.sh
+execution:
+  model: claude-sonnet-5-5
+  max_turns: 40
+  timeout_seconds: 900
+  allowed_tools: [Read, Glob, Grep, Skill, Agent, Bash]
+  prompt: /daedalus-core:code-review --spec none
+graders:
+  - name: lens-disabled-by-config
+    type: regex
+    pattern: "Lenses skipped: [^\\n]*\\berror-handling \\(disabled by config\\)"
+  - name: config-named
+    type: regex
+    pattern: "Config: `?\\.claude/agent-config/code-review\\.md"
+  - name: finders-ran
+    type: tool_used
+    tool: Agent
+    min: 5

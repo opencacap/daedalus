@@ -13,10 +13,10 @@ From `plugins/daedalus-core`:
 
 - `run.sh` passes its arguments to `claude plugin eval`. It evaluates a temporary copy of the plugin without the `dependencies` field, because each eval run uses an isolated home where marketplace dependencies are not installed and the plugin would not load. Results go to `evals/results/`, which git ignores. It also copies `plugins/daedalus-python` into the `stack` case, because a case can load only plugins under the plugin being evaluated; run the suite through `run.sh`, not `claude plugin eval` directly.
 - `--scaffold` runs the case fixtures. `--trust-plugin` confirms that you trust this repository's code.
-- `--allow-tools` lets the review run git and, for the `config-check-fails` case, the check command its config lists, and nothing else in the shell.
+- `--allow-tools` lets the review run git and the check command that the `config-check-fails` config lists, and nothing else in the shell. Every case gets both grants.
 - Every case pins the model under test to `claude-sonnet-5-5`. Cases that reach the spec step and are not about the spec pass `--spec none`, so the review does not stop to ask for one. Every lens case also checks that its finding was verified (`Verifier: CONFIRMED`). `--judge-model` pins the judge for `llm` graders. The suite has none yet, so the judge model applies only if an `llm` grader is added.
 - `--ablation none` skips the no-plugin baseline. Without the plugin the slash command does not exist, so the baseline measures nothing.
-- One pass over the suite (21 cases, 1 run each) costs about $13 and takes about 4 minutes with `-j 8`.
+- One pass over the suite (22 cases, 1 run each) costs about $14 and takes about 4 minutes with `-j 8`.
 
 To run one case, add `--case <name>`.
 
@@ -48,9 +48,12 @@ To run one case, add `--case <name>`.
 | `comments` | The diff adds a docstring that promises a `KeyError` the code never raises | An M finding at `src/directory.py:4-5` (the docstring) or `:9` (the `return None` it contradicts) from the `comments` lens, and a verdict that is not blocking |
 | `stack` | `daedalus-python` is loaded; the diff adds a mutable default argument | A C or H finding at `src/tags.py:4` from the `stack` lens that cites `python-patterns`, and a blocking verdict |
 | `config-lens-off` | The review config turns `error-handling` off; the diff adds a correct `mean()` | `error-handling` is not among the lenses run and is skipped with `disabled by config`, and the summary names the config |
-| `config-do-not-report` | The `seeded-bug` diff; the review config lists its defect under "Do not report" | No finding at `src/stats.py:10-13`, and a verdict that is not blocking |
+| `config-do-not-report` | The `seeded-bug` diff; the review config lists its defect under "Do not report" | No finding at `src/stats.py:13`, and a verdict that is not blocking |
 | `config-spec-source` | The review config says specs live in `product/requirements/` and are read from `main`; `main` added a requirement after the branch was cut | The coverage table names `product/requirements/gift-cards.md` and shows the new requirement as partial or missing, and the review does not ask for a spec |
+| `config-local` | `.claude/` is git-ignored; a pointer in `.claude/rules/` names a local config that turns `error-handling` off | `error-handling` is skipped with `disabled by config`, and the summary names the local config |
 | `config-check-fails` | The review config lists a `unittest` check; the diff adds the `seeded-bug` defect and a test that fails on it | The Checks section quotes the failure (`6.0 != 3`), the summary names the check as `FAIL`, and a C or H finding at `src/stats.py:13` |
+
+Every `config-*` case also requires at least 5 sub-agents, so a review that skips its finders fails.
 
 ## Adding a case
 

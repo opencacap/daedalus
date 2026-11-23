@@ -21,3 +21,7 @@ graders:
     type: regex
     pattern: "Where is the spec for this change\\?"
     match: not_contains
+  - name: finders-ran
+    type: tool_used
+    tool: Agent
+    min: 5

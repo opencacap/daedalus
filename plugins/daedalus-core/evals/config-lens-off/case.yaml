@@ -20,3 +20,7 @@ graders:
   - name: config-named
     type: regex
     pattern: "Config: `?docs/agents/code-review\\.md"
+  - name: finders-ran
+    type: tool_used
+    tool: Agent
+    min: 5

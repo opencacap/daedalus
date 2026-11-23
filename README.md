@@ -6,7 +6,7 @@ A Claude Code and Codex plugin marketplace for shared engineering rules and work
 
 | Plugin | What it does |
 |---|---|
-| `daedalus-core` | Loads the shared engineering rules in [`plugins/daedalus-core/rules/`](plugins/daedalus-core/rules/) at every session start, and provides the `code-review` and `security-review` skills (see [Code review](#code-review)). Depends on [`mattpocock-skills`](https://github.com/mattpocock/skills) (engineering workflow) and the pinned `ponytail` and `caveman` entries below. |
+| `daedalus-core` | Loads the shared engineering rules in [`plugins/daedalus-core/rules/`](plugins/daedalus-core/rules/) at every session start, and provides the `security-review` skill and the `code-review` skill with its optional per-repo review config (see [Code review](#code-review)). Depends on [`mattpocock-skills`](https://github.com/mattpocock/skills) (engineering workflow) and the pinned `ponytail` and `caveman` entries below. |
 | `daedalus-writing` | Opt-in editorial skills for Vietnamese (`vietnamizer`), English (`clarity`), Japanese documents (`natural-japanese`), and Japanese correspondence (`slop-nuki`). Depends on `daedalus-core`. |
 | `daedalus-java` | Skill `java-coding-standards`: framework-agnostic Java standards. Depends on `daedalus-core`. |
 | `daedalus-springboot` | Skills `spring-coding-standards`, `springboot-patterns`, `springboot-security`, `springboot-verification`, `hexagonal-architecture`, `jpa-patterns`, and the `java-build-resolver` agent. Depends on `daedalus-java`. |
@@ -95,7 +95,7 @@ Without `--spec`, the review takes the spec from issue references in the commit 
 
 ### Review config
 
-A project can tune the review with an optional Markdown file, usually `docs/agents/code-review.md`, which the agent-skills section of its `AGENTS.md` or `CLAUDE.md` points to. It lists spec sources and how to read their latest version, check commands (lint, type check, tests) whose results the finders and verifiers use as evidence, lenses to turn off, and findings not to report. The review reads the config from the base branch, so a branch cannot turn off its own review. Allow the check commands in the project's permissions, or the report marks them as not run. See [the config format](plugins/daedalus-core/skills/code-review/references/review-config.md).
+A project can tune the review with an optional Markdown file, usually `docs/agents/code-review.md`, which the agent-skills section of its `AGENTS.md` or `CLAUDE.md` points to. It lists spec sources and how to read their latest version, check commands (lint, type check, tests) whose results the finders and verifiers use as evidence, lenses to turn off, and findings not to report. The review reads a committed config from the base branch, so a branch cannot turn off its own review; a config that git does not track is read from the working tree. Allow the check commands in the project's permissions, or the report marks them as not run. See [the config format](plugins/daedalus-core/skills/code-review/references/review-config.md).
 
 ### Codex
 

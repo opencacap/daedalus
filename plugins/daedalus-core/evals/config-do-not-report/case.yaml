@@ -13,8 +13,12 @@ execution:
 graders:
   - name: listed-defect-not-reported
     type: regex
-    pattern: "- Location: `src/stats\\.py:(?:\\d+-)?1[0-3]\\b"
+    pattern: "- Location: `src/stats\\.py:(?:\\d+-)?13\\b"
     match: not_contains
   - name: not-blocking
     type: regex
     pattern: "\\*\\*Verdict: NOT BLOCKING\\*\\*"
+  - name: finders-ran
+    type: tool_used
+    tool: Agent
+    min: 5

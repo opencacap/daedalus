@@ -44,14 +44,14 @@ Each reported finding gets a tag: its severity letter and a number, for example 
 
 ### Checks
 
-<one line per check, as below, or "No checks configured.">
+<one entry per check, as below, or "No checks configured.">
 
 ### Summary
 
 Lenses run: <ids>. Lenses skipped: <id (reason), ...>. Findings: C<n> H<n> M<n> L<n> introduced, C<n> H<n> M<n> L<n> pre-existing, <n> need a human. Dropped: <n> suppressed, <n> refuted, <n> uncertain M/L. Config: <path, or none>. Checks: <`<command>` PASS | FAIL | NOT RUN, ...; or none>. Scope: <n> files, `<base>`...<HEAD, or HEAD plus uncommitted changes>. Scope gaps: <gaps, or none>.
 ```
 
-## Check line
+## Check entry
 
 ````markdown
 - `<command>`: <PASS | FAIL | NOT RUN (<reason>)>

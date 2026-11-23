@@ -20,3 +20,7 @@ graders:
   - name: finding-at-seeded-line
     type: regex
     pattern: "\\*\\*[CH]\\d+ — [^\\n]*\\n- Location: `src/stats\\.py:(?:\\d+-)?13\\b"
+  - name: finders-ran
+    type: tool_used
+    tool: Agent
+    min: 5
