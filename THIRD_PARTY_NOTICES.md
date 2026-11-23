@@ -16,6 +16,12 @@ Parts of this repository are adapted from the projects below. Each is distribute
 | `plugins/daedalus-react/skills/react-performance/SKILL.md` | everything-claude-code, `skills/react-performance/SKILL.md` (references to absent agents, rules, and commands removed), itself adapted from Vercel Labs [agent-skills](https://github.com/vercel-labs/agent-skills) `react-best-practices` (MIT) | Copyright (c) 2026 Affaan Mustafa |
 | `plugins/daedalus-react/agents/react-build-resolver.md` | everything-claude-code, `agents/react-build-resolver.md` (references updated) | Copyright (c) 2026 Affaan Mustafa |
 | `plugins/daedalus-core/rules/engineering.md`, sections 1–3 | [andrej-karpathy-skills](https://github.com/forrestchang/andrej-karpathy-skills), `skills/karpathy-guidelines/SKILL.md` (rewritten) | Copyright (c) forrestchang |
+| `plugins/daedalus-writing/skills/vietnamizer/` | [finolabs/vietnamizer](https://github.com/finolabs/vietnamizer/tree/78ed5f7f0b40601ddbfb6a901203b79c45c9df11) | Copyright (c) 2026 Fioenix |
+| `plugins/daedalus-writing/skills/clarity/` | [addyosmani/clarity](https://github.com/addyosmani/clarity/tree/e27ceeff60368cf6966b4ea00a5b9b36418ee9a0) | Copyright (c) 2026 Addy Osmani |
+| `plugins/daedalus-writing/skills/natural-japanese/` | [coji/natural-japanese](https://github.com/coji/natural-japanese/tree/840bd400cbcb64c8b64d492a144da54fc05776c5) | Copyright (c) 2026 coji |
+| `plugins/daedalus-writing/skills/slop-nuki/` | [chezou/slop-nuki](https://github.com/chezou/slop-nuki/tree/1bdf627b5991f4f806069619c9bde407960feac7) | Copyright (c) 2026 Aki Ariga |
+
+The writing skills include their upstream licenses. `slop-nuki` adapts [stop-slop](https://github.com/hardikpandya/stop-slop) (MIT, Copyright (c) 2025 Hardik Pandya).
 
 `daedalus-core` depends on [mattpocock-skills](https://github.com/mattpocock/skills) (MIT, Copyright (c) 2026 Matt Pocock), which is installed from its own marketplace and is not redistributed here.
 

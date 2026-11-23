@@ -13,6 +13,11 @@
       "description": "Shared engineering rules loaded at session start and a security-review skill, with Matt Pocock's skills as the engineering workflow."
     },
     {
+      "name": "daedalus-writing",
+      "source": "./plugins/daedalus-writing",
+      "description": "On-demand writing and editorial review in Vietnamese, English, and Japanese."
+    },
+    {
       "name": "daedalus-java",
       "source": "./plugins/daedalus-java",
       "description": "Framework-agnostic Java coding standards."

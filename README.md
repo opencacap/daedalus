@@ -7,6 +7,7 @@ A Claude Code and Codex plugin marketplace for shared engineering rules and work
 | Plugin | What it does |
 |---|---|
 | `daedalus-core` | Loads the shared engineering rules in [`plugins/daedalus-core/rules/`](plugins/daedalus-core/rules/) at every session start, and provides the `security-review` skill. Depends on [`mattpocock-skills`](https://github.com/mattpocock/skills) (engineering workflow) and the pinned `ponytail` and `caveman` entries below. |
+| `daedalus-writing` | Opt-in editorial skills for Vietnamese (`vietnamizer`), English (`clarity`), Japanese documents (`natural-japanese`), and Japanese correspondence (`slop-nuki`). Depends on `daedalus-core`. |
 | `daedalus-java` | Skill `java-coding-standards`: framework-agnostic Java standards. Depends on `daedalus-core`. |
 | `daedalus-springboot` | Skills `spring-coding-standards`, `springboot-patterns`, `springboot-security`, `springboot-verification`, `hexagonal-architecture`, `jpa-patterns`, and the `java-build-resolver` agent. Depends on `daedalus-java`. |
 | `daedalus-infra` | Skill `docker-patterns`. Depends on `daedalus-core` and the official [`aws-core`](https://github.com/aws/agent-toolkit-for-aws) and `terraform` (HashiCorp) plugins from `claude-plugins-official`. Their MCP servers need `uvx` plus AWS credentials (`aws-mcp`) and a running Docker daemon (`terraform`); without them the server fails to connect but the skills still work. |
@@ -78,6 +79,12 @@ If you installed caveman with its own installer (an entry in `~/.codex/hooks.jso
 A dependency cannot be disabled while `daedalus-core` is enabled. To keep normal replies, set caveman's default mode instead: `{"defaultMode": "off"}` in `~/.config/caveman/config.json`, or `CAVEMAN_DEFAULT_MODE=off`.
 
 If you installed `caveman@caveman` or `ponytail@ponytail` from their own marketplaces before, uninstall them; otherwise their hooks run twice.
+
+## Writing
+
+Updating core gives every project the shared editing rule. Install the writing plugin once for the four on-demand skills. In Claude Code, run `/plugin install daedalus-writing@daedalus` or add `"daedalus-writing@daedalus": true` to the project's `enabledPlugins`. In Codex, install core as described above and run `codex plugin add daedalus-writing@daedalus`. The writing plugin has no hooks. Use existing project instructions for a client glossary, required language, or preferred register.
+
+Choose the skill by the language of the deliverable. For example, use `/daedalus-writing:clarity review proposal.md` in Claude Code for feedback on an English proposal. For Japanese, use `natural-japanese` for the proposal and `slop-nuki` for the email that accompanies it. Both `vietnamizer` and `slop-nuki` use Markdown alone. Clarity's lint mode uses Python 3. Japanese document lint uses `uv` with SudachiPy and its dictionary, with a bundled manual checklist when `uv` is unavailable.
 
 ## Third-party plugins
 

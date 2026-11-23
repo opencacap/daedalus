@@ -1,0 +1,12 @@
+{
+  "name": "daedalus-writing",
+  "version": "0.1.0",
+  "description": "On-demand writing and editorial review in Vietnamese, English, and Japanese.",
+  "author": {
+    "name": "opencacap"
+  },
+  "homepage": "https://github.com/opencacap/daedalus",
+  "repository": "https://github.com/opencacap/daedalus",
+  "license": "MIT",
+  "dependencies": ["daedalus-core"]
+}
