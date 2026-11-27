@@ -305,7 +305,7 @@ CITATION: <file>:<line> — <one sentence of evidence>"""
 
 def recheck(fid, f, cwd, cfg):
     out = claude(RECHECK.format(id=fid, **f), cwd, cfg["review_model"], cfg["budget_recheck"],
-                 ["Read", "Glob", "Grep", "Bash"])
+                 ["Read", "Glob", "Grep", "Bash(git show:*)", "Bash(git log:*)", "Bash(git diff:*)"])
     text = out.get("result") or ""
     m = re.search(r"RESULT:\s*(fixed|open|cannot tell)", text)
     loc = re.search(r"LOCATION:\s*(\S+)", text)

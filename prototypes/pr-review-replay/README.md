@@ -43,3 +43,5 @@ python3 -I replay.py metrics DATA           # reads DATA/labels.json for merges 
 `labels.json` maps `<arm>-r<round>-<index>` to the truth for that finding: a finding id, `new`, or `outside-repeat:<ref>`, for a repeat of an earlier finding that never got an id.
 
 Each review runs `claude -p` with `--setting-sources project,local` and `--plugin-dir`. User-level plugins and hooks therefore do not load.
+
+**Run this only on PRs you trust.** Each review loads the reviewed tree's project settings (`.claude/`, `CLAUDE.md`), as a real review does, and runs with `Bash`. A hostile PR could therefore run code with your credentials. The recheck is limited to `git show`, `git log`, and `git diff`.
